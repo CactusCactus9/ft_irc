@@ -1,7 +1,18 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
-#include "server.hpp"
+#include <iostream>
+#include <string>
 
-int		create_client();
+class	Client{
+	private:
+		int			clientID;
+		std::string	clientIP;
+	public:
+		Client();
+		int		getClientID();
+		void	setClientID(int fd);
+		void	setIP(std::string &IPaddr);
+		~Client();
+};
 
 #endif

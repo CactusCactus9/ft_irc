@@ -1,21 +1,18 @@
-#include "server.hpp"
-#include "client.hpp"
-// int	main(){
-// 	try{
-// 		if (create_server())
-// 			throw("Error");
-// 		if (create_client())
-// 			throw("Error");
-// 		int	CID = create_client();
-// 		const std::string str = "3allo";
-// 		send(CID, str.c_str(), str.size(), 0);
-// 		std::string	joumla;
-// 		memset((void *)joumla.c_str(), 0, joumla.size());
-// 		recv(CID, (void *)joumla.c_str(), joumla.size(), 0);
-// 	}
-// 	catch(...){
+#include "Server.hpp"
+#include "Client.hpp"
 
-// 	}
-
-	
-// }
+int	main(int ac, char **av){
+	try{
+		if (ac != 3){
+			std::cerr << "Enter a port and a password" << std::endl;
+			return (1);
+		}
+		Server	serv;
+		serv.setPort(strtol(av[1], NULL, 10));
+		// signal(SIGINT, Server::sigHandler());
+		serv.create_socket();
+	}
+	catch(const std::exception &e){
+		std::cout << e.what() << std::endl;
+	}
+}
