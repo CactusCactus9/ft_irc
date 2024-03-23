@@ -11,7 +11,6 @@
 #include <vector>
 #include <fcntl.h>
 #include <csignal>
-#include <exception>
 
 
 class	Server{
@@ -25,8 +24,9 @@ class	Server{
 		Server();
 		void		setPort(int n);
 		void		create_socket();
+		void		multi_clients();
 		void		acceptClient();
-		void		recieve_data(int fd);
+		// void		recieve_data(int fd);
 		static void	sigHandler(int signum);
 		void		closeFD();
 		void		clearClients(int fd);

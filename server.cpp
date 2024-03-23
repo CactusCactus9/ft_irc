@@ -1,16 +1,18 @@
 #include "Server.hpp"
 
-// bool	signal = false;
+bool	Server::signal = false;
 
+void	Server::sigHandler(int signum){
+	(void)signum;
+	signal = true;//to stop the server
+}
 Server::Server(){serverID = -1;}
 
 void	Server::setPort(int n){
 	port = n;
 }
-// void	sigHandler(int signum){
-// 	(void)signum;
-// 	signal = true;//to stop the server
-// }
+
+
 void	Server::clearClients(int fd){
 	for (size_t i = 0; i < fds.size(); ++i){//remove client from fds vector
 		if(fds[i].fd == fd){
@@ -25,9 +27,9 @@ void	Server::clearClients(int fd){
 		}
 	}
 }void	Server::closeFD(){
-	for (size_t i = 0; i < Clients.size(); ++i)
+	for (size_t i = 0; i < Clients.size(); ++i)//close clients fd
 		close(Clients[i].getClientID());
-	if (serverID == -1)
+	if (serverID == -1)//close server socket
 		close(serverID);
 }
 
@@ -37,25 +39,68 @@ void		Server::create_socket(){
 	memset(&serveraddress, 0, sizeof(serveraddress));
 	serveraddress.sin_family = AF_INET;
 	serveraddress.sin_port = htons(this->port);
-	serveraddress.sin_addr.s_addr = INADDR_ANY;
+	serveraddress.sin_addr.s_addr = INADDR_ANY;//any local machine address
 
+	std::cout << this->signal << "iwa" << std::endl;
 	serverID = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverID == -1)
 		throw (std::runtime_error("Server failed to get created!"));
 	int	val = 1;
-	if (setsockopt(serverID, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)) == -1)
+	if (setsockopt(serverID, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)) == -1)//SET OPTIONS OF SOCKET: SOL_SOCKET:the option is defined at socket level/ SO_REUSADDR : the option that allows to reuse local addresses which can be useful in scenarios where you want to quickly restart a server on the same address and port after it has been stopped.
 		throw (std::runtime_error("the reuse of the address has failed!"));
-	if (fcntl(serverID, F_SETFL, O_NONBLOCK) == -1)
+	if (fcntl(serverID, F_SETFL, O_NONBLOCK) == -1)//PERFORM OPERATIONS ON FD : F_SETFL: THE OPERATION IS TO SET FILE STATUS FLAGS/ O_NONBLOCK : SOCKET NONBLOCKING
 		throw ("Failed to set nonblocking flag!");
-	if (bind(serverID, (const sockaddr *)&serveraddress, sizeof(serveraddress)) == -1)
+	if (bind(serverID, (const sockaddr *)&serveraddress, sizeof(serveraddress)) == -1)//bind the server to a port and IP
 		throw(std::runtime_error("Binding to IP and port failed!"));
-	if (listen(serverID, SOMAXCONN) == -1)
+	if (listen(serverID, SOMAXCONN) == -1)//socket is passive and listening to coming connections
 		throw (std::runtime_error("server isn't listening!"));
-	pollf.fd = serverID;
+	pollf.fd = serverID;//initialize the fds with server
 	pollf.events = POLLIN;//flag to indicate theres data to read
-	pollf.revents = 0;
-	fds.push_back(pollf);
+	fds.push_back(pollf);//initialize fds vector
 	std::cout << "server is listening from port : " << this->port << std::endl;
+}
+
+void	Server::acceptClient(){
+	Client				client;
+	struct sockaddr_in	clientaddress;
+	struct pollfd		newpool;
+	socklen_t			clientaddrlen = 0;
+
+	memset(&clientaddress, 0, sizeof(clientaddress));
+	int	connectionID = accept(serverID, (struct sockaddr *)&clientaddress, &clientaddrlen);
+	if (connectionID == -1){
+		std::cerr << "Failed to connect!" << std::endl;
+		return ;
+	}
+	if (fcntl(connectionID, F_SETFL, O_NONBLOCK) == -1){
+		std::cerr << "failed to set nonblocking option!" << std::endl;
+		return ;
+	}
+	newpool.fd = connectionID;
+	newpool.events = POLLIN;
+
+	client.setClientID(connectionID);
+	client.setIP(inet_ntoa(clientaddress.sin_addr));
+	Clients.push_back(client);
+	fds.push_back(newpool);
+	std::cout << "accepted!" << std::endl;
+}
+
+void	Server::multi_clients(){
+	while (Server::signal == false){
+		if (poll(&fds[0], fds.size(), -1) == -1 && Server::signal == false)//poll blocked indefinitely till an event occurs or ctrl c
+			throw (std::runtime_error("poll() failed!"));
+		for (size_t i = 0; i < fds.size(); ++i){
+			if (fds[i].revents & POLLIN)//returned event: data to read
+			{
+				if (fds[i].fd == serverID)
+					acceptClient();
+				// else
+				// 	recieve_data(fds[i].fd);
+			}
+		}
+	}
+	closeFD();
 }
 
 

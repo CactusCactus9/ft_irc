@@ -11,7 +11,7 @@ class	Client{
 		Client();
 		int		getClientID();
 		void	setClientID(int fd);
-		void	setIP(std::string &IPaddr);
+		void	setIP(std::string IPaddr);
 		~Client();
 };
 

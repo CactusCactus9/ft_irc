@@ -9,7 +9,7 @@ int Client::getClientID(){
 void	Client::setClientID(int fd){
 	this->clientID = fd;
 }
-void	Client::setIP(std::string &IPaddr){
+void	Client::setIP(std::string IPaddr){
 	this->clientIP = IPaddr;
 }
 Client::~Client(){}
