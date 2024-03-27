@@ -1,3 +1,6 @@
+
+
+
 #ifndef SERVER_HPP
 #define SERVER_HPP
 #include <sys/types.h>
@@ -11,25 +14,30 @@
 #include <vector>
 #include <fcntl.h>
 #include <csignal>
+#include <cstring>
+#include <string>
 
 
 class	Server{
 	private:
 		int							serverID;
 		int							port;
+		char *					password;
 		static bool					signal;
 		std::vector<Client>			Clients;
 		std::vector<struct pollfd>	fds;
 	public:
 		Server();
 		void		setPort(int n);
+		void		setPassword(char *str);
 		void		create_socket();
+		void		launch_server();
 		void		multi_clients();
 		void		acceptClient();
-		// void		recieve_data(int fd);
+		void		recieve_data(int fd);
 		static void	sigHandler(int signum);
 		void		closeFD();
-		void		clearClients(int fd);
+		void		clearClient(int fd);
 };
 
 #endif

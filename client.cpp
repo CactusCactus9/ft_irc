@@ -12,82 +12,13 @@ void	Client::setClientID(int fd){
 void	Client::setIP(std::string IPaddr){
 	this->clientIP = IPaddr;
 }
+void	Client::setBuffer(std::string rec){
+	this->buffer = rec;
+}
 Client::~Client(){}
 
 
 
-
-
-
-
-// #include <iostream>
-// #include <cstring>
-// #include <cstdlib>
-// #include <unistd.h>
-// #include"server.hpp"
-// #include <pthread.h>
-
-// void *handleClient(void *arg) {
-//     int connectionServerId = *((int*)arg);
-//     char receivedMsg[1024];
-//     memset(receivedMsg, 0, sizeof(receivedMsg));
-//     recv(connectionServerId, receivedMsg, 1024, 0);
-//     std::cout << "Server received: " << receivedMsg << std::endl;
-//     close(connectionServerId);
-//     return NULL;
-// }
-
-// int main() {
-//     try {
-//         int socketId = socket(AF_INET, SOCK_STREAM, 0);
-//         if (socketId == -1) {
-//             std::cerr << "Server not created!" << std::endl;
-//             return 1;
-//         }
-
-//         struct sockaddr_in sockaddress;
-//         memset(&sockaddress, 0, sizeof(sockaddress));
-//         sockaddress.sin_family = AF_INET;
-//         sockaddress.sin_port = htons(6667);
-//         sockaddress.sin_addr.s_addr = htonl(INADDR_ANY);
-
-//         if (bind(socketId, (struct sockaddr *)&sockaddress, sizeof(sockaddress)) == -1) {
-//             std::cerr << "Error at binding" << std::endl;
-//             close(socketId);
-//             return 1;
-//         }
-//         std::cout << "Server is binded to port: 6667" << std::endl;
-
-//         if (listen(socketId, 200) == -1) {
-//             std::cerr << "Not listening!" << std::endl;
-//             return 1;
-//         }
-//         std::cout << "Server is listening ..." << std::endl;
-
-//         while (1) {
-//             struct sockaddr_in connectedClientAddr;
-//             memset(&connectedClientAddr, 0, sizeof(connectedClientAddr));
-//             socklen_t ClientAdrLength = sizeof(connectedClientAddr);
-//             int connectionServerId = accept(socketId, (struct sockaddr *) &connectedClientAddr, &ClientAdrLength);
-//             if (connectionServerId == -1) {
-//                 close(socketId);
-//                 throw "Failed to accept connection with client!";
-//             }
-//             std::cout << "Accepted a request at socket ID: " << connectionServerId << std::endl;
-
-//             // Create a new thread to handle the client connection
-//             pthread_t threadId;
-//             if (pthread_create(&threadId, NULL, handleClient, &connectionServerId) != 0) {
-//                 std::cerr << "Error creating thread" << std::endl;
-//                 close(connectionServerId);
-//                 continue;
-//             }
-//             pthread_detach(threadId); // Detach the thread to avoid memory leaks
-//         }
-//         close(socketId);
-//     } catch (...) {
-//         // Handle exceptions
-//     }
 
 //     return 0;
 // }
