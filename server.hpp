@@ -22,7 +22,7 @@ class	Server{
 	private:
 		int							serverID;
 		int							port;
-		char *					password;
+		std::string					password;
 		static bool					signal;
 		std::vector<Client>			Clients;
 		std::vector<struct pollfd>	fds;

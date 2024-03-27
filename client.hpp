@@ -10,8 +10,8 @@ class	Client{
 		std::string	nickname;
 		std::string	username;
 		std::string	buffer;
-		bool		authenticated;
-		bool		registered;
+		// bool		authenticated;
+		// bool		registered;
 	public:
 		Client();
 		int		getClientID();

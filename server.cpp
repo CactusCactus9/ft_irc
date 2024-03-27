@@ -86,7 +86,7 @@ void	Server::acceptClient(){
 		std::cerr << "Failed to connect!" << std::endl;
 		return ;
 	}
-	if (send(connectionID, "enter: password, nickname, and username", 39, 0) == -1)
+	if (send(connectionID, "enter: password, nickname, and username\n", 40, 0) == -1)
 		throw (std::runtime_error("failed to send to client"));
 	if (fcntl(connectionID, F_SETFL, O_NONBLOCK) == -1){//server configuration can impact client's so we set new socket as server 
 		std::cerr << "failed to set nonblocking option!" << std::endl;
@@ -117,7 +117,9 @@ void	Server::recieve_data(int fd){
 		this->Clients[fd].setBuffer(buffer);
 	// if (this->Clients[fd].setBuffer.find_first_of("\n\r") == std::string::npos)
 	// 	return;
-	if (strcmp(buffer, "pass"))
+	password += "\n";
+	std::cout << buffer << std::endl;
+	if (strcmp(buffer, this->password.c_str()))
 		std::cout << "word" << std::endl;
 
 
