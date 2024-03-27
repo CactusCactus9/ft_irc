@@ -7,7 +7,12 @@ void	Server::sigHandler(int signum){
 	std::cout << "signal found!" << std::endl;
 	signal = true;//to stop the server
 }
-Server::Server(){serverID = -1;}
+Server::Server(){
+	serverID = -1; 
+	password = "\0";
+	nick = "tikchbila";
+	user = "tiwliwla";
+	}
 
 void	Server::setPort(int n){
 	port = n;
@@ -81,7 +86,7 @@ void	Server::acceptClient(){
 	socklen_t			clientaddrlen = 0;
 
 	memset(&clientaddress, 0, sizeof(clientaddress));
-	int	connectionID = accept(serverID, (struct sockaddr *)&clientaddress, &clientaddrlen);//new socket to 	assure safe communication with multiple clients 
+	this->connectionID = accept(serverID, (struct sockaddr *)&clientaddress, &clientaddrlen);//new socket to 	assure safe communication with multiple clients 
 	if (connectionID == -1){
 		std::cerr << "Failed to connect!" << std::endl;
 		return ;
@@ -102,6 +107,12 @@ void	Server::acceptClient(){
 	std::cout << "accepted!" << std::endl;
 }
 
+void	to_lower(std::string &command){
+	for (size_t i = 0; i < command.size(); ++i){
+		command[i] = std::tolower(command[i]);
+	}
+}
+
 void	Server::recieve_data(int fd){
 	char	buffer[1024];
 	Client	c;
@@ -118,10 +129,28 @@ void	Server::recieve_data(int fd){
 	// if (this->Clients[fd].setBuffer.find_first_of("\n\r") == std::string::npos)
 	// 	return;
 	password += "\n";
-	std::cout << buffer << std::endl;
-	if (strcmp(buffer, this->password.c_str()))
-		std::cout << "word" << std::endl;
-
+	// if (strcmp(buffer, this->password.c_str())){
+	// 	if (send(connectionID, "password :", 10, 0) == -1)
+	// 		throw (std::runtime_error("failed to send to client"));
+	// 	size_t	total = recv(fd, buffer, sizeof(buffer) - 1, 0);
+	// 	if (total <= 0){
+	// 		std::cout << "client gone" << std::endl;
+	// 	clearClient(fd);
+	// 	close(fd);
+	// }
+	// }
+	std::string	buf = buffer;
+	size_t found = buf.find(' ');
+	this->command = buf.substr(0, found);
+	this->args = buf.substr(found + 1, buf.length());
+	to_lower(this->command);
+	if (this->command == "join")
+		std::cout <<"join channel" << std::endl;
+	else if (this->command == "invite")
+		std::cout <<"invite user" << std::endl;
+	else if (this->command == "kick")
+		std::cout <<"kick user" << std::endl;
+	std::cout << "command : " << this->command << " args :" << this->args << std::endl;
 
 }
 
@@ -141,59 +170,3 @@ void	Server::multi_clients(){
 	}
 	closeFD();
 }
-
-
-// // int	server_init(){
-// // 	int	serverID = socket (AF_INET, SOCK_STREAM, 0);
-// // 	if (serverID == -1){
-// // 		std::cerr << "Server failer to get created!" << std::endl;
-// // 		return (1);
-// // 	}
-// // 	return (serverID);
-// // }
-
-// struct sockaddr_in	init_struct(int n){
-// 	struct sockaddr_in	sockaddress;//socket address
-// 	memset(&sockaddress, 0, sizeof(sockaddress));
-// 	sockaddress.sin_family = AF_INET;
-// 	sockaddress.sin_port = htons(n);
-// 	sockaddress.sin_addr.s_addr = inet_addr("127.0.0.1");
-// 	return (sockaddress);
-// }
-
-// int	main(int ac, char **av){
-// 	if (ac != 3){
-// 		std::cerr << "Enter a port and a password!" << std::endl;
-// 		return (1);
-// 	}
-// 	//----Create server----//
-// 	int	serverID = socket (AF_INET, SOCK_STREAM, 0);
-// 	if (serverID == -1){
-// 		std::cerr << "Server failer to get created!" << std::endl;
-// 		return (1);
-// 	}
-// 	struct sockaddr_in	serveraddres = init_struct(strtol(av[1], NULL, 10));//struct sockaddr : struct used by kernel to store addresses
-// 	if (bind(serverID, (struct sockaddr *)&serveraddres, sizeof(serveraddres)) == -1){
-// 		std::cerr << "Server not binded!" << std::endl;
-// 		close(serverID);
-// 		return (1);
-// 	}
-// 	if (listen (serverID, 200) == -1){
-// 		std::cerr << "Server isn't listening!" << std::endl;
-// 		return (1);
-// 	}
-// 	while (1){
-// 		struct sockaddr_in	clientaddress;
-// 		memset(&clientaddress, 0, sizeof(clientaddress));
-// 		socklen_t			clientaddrlen = 0;
-// 		int	connectionID = accept(serverID, (struct sockaddr *)&clientaddress, &clientaddrlen);
-// 		if (connectionID == -1){
-// 			close(serverID);
-// 			std::cerr << "Failed to connect!" << std::endl;
-// 			return (1);
-// 		}
-// 		char	buffer[1024];
-// 		memset(buffer, 0, sizeof(buffer));
-// 		recv()
-// 	}
-// }

@@ -23,9 +23,14 @@ class	Server{
 		int							serverID;
 		int							port;
 		std::string					password;
+		std::string					nick;
+		std::string					user;
 		static bool					signal;
 		std::vector<Client>			Clients;
 		std::vector<struct pollfd>	fds;
+		int							connectionID;
+		std::string 				command;
+		std::string 				args;
 	public:
 		Server();
 		void		setPort(int n);
