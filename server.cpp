@@ -126,8 +126,6 @@ void	Server::recieve_data(int fd){
 	}
 	else
 		this->Clients[fd].setBuffer(buffer);
-	// if (this->Clients[fd].setBuffer.find_first_of("\n\r") == std::string::npos)
-	// 	return;
 	password += "\n";
 	// if (strcmp(buffer, this->password.c_str())){
 	// 	if (send(connectionID, "password :", 10, 0) == -1)
@@ -144,11 +142,11 @@ void	Server::recieve_data(int fd){
 	this->command = buf.substr(0, found);
 	this->args = buf.substr(found + 1, buf.length());
 	to_lower(this->command);
-	if (this->command == "join")
+	if (this->command == "join\n")
 		std::cout <<"join channel" << std::endl;
-	else if (this->command == "invite")
+	else if (this->command == "invite\n")
 		std::cout <<"invite user" << std::endl;
-	else if (this->command == "kick")
+	else if (this->command == "kick\n")
 		std::cout <<"kick user" << std::endl;
 	std::cout << "command : " << this->command << " args :" << this->args << std::endl;
 
