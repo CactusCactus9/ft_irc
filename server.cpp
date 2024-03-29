@@ -39,6 +39,8 @@ void	Server::clearClient(int fd){
 	for (size_t i = 0; i < Clients.size(); ++i){//close clients fd
 		std::cout << "client disconnected" << std::endl;
 		close(Clients[i].getClientID());}
+
+		
 	if (serverID == -1){//close server socket
 		std::cout << "server disconnected" << std::endl;
 		close(serverID);}
