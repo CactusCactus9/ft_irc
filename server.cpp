@@ -15,13 +15,18 @@ Server::Server(){
 	}
 
 void	Server::setPort(int n){
-	port = n;
+	this->port = n;
 }
 
 void	Server::setPassword(char *str){
-	password = str;
+	this->password = str;
 }
-
+int	Server::getPort(){
+	return(this->port);
+}
+std::string	Server::getPassword(){
+	return (this->password);
+}
 void	Server::clearClient(int fd){
 	for (size_t i = 0; i < fds.size(); ++i){//remove client from fds vector
 		if(fds[i].fd == fd){
@@ -132,22 +137,39 @@ void	Server::recieve_data(int fd){
 		close(fd);
 	}
 	else{
-		std::string	buf = buffer;size_t fond;
+		std::string	buf = buffer;
+		 size_t fond;
 		std::string	new_buf = skip_spaces(buf);
-			fond = new_buf.find_first_of(" ");
-			if (fond != std::string::npos){
-				std::cout << "found space in here : " << fond << std::endl;
-				this->command = new_buf.substr(0, fond);
-				this->args = new_buf.substr(fond + 1, new_buf.length());
-				std::cout << "command: " << this->command << std::endl;
-				std::cout << "argu: " << this->args << std::endl;
-			}
+		for(size_t i = 0; i <= new_buf.size(); i++){
+			fond = new_buf.find_first_of("\t\r\n");
+			if (fond == std::string::npos)
+				return;
+			std::cout << "content of fond++" << new_buf[fond] << "++" << std::endl;	
+			std::string	commond = new_buf.substr(0, fond);
+			std::cout << "command:" << commond << "--" << std::endl;
+			size_t	sp = commond.find_first_of(" ");
+			this->command = commond.substr(0, sp);
+			std::cout << "com:" << this->command << "--" << std::endl;
+			new_buf = new_buf.substr(fond+1, new_buf.size());
+			this->args = skip_spaces(commond.substr(sp + 1, commond.length()));
+			std::cout << "argu:" << this->args << "--" << std::endl;
+			std::cout << "new_buff :" << &new_buf[i] << std::endl;
+		}
+			// for(size_t i = 0; i < new_buf.size(); ++i){
+			// 	size_t	old_fond = 0; 
+			// 	if (fond != std::string::npos){
+			// 	}
+			// 	else
+			// 		return ;
+			// 	old_fond = fond;
+			// 	fond++;
+			// }
 		// this->password += "\n";
 		// if (strcmp(buffer, this->password.c_str())){
 		// 	if (send(this->connectionID, "password :", 10, 0) == -1)
 		// 		throw (std::runtime_error("failed to send to client"));
 		// 	size_t	total = recv(fd, buffer, sizeof(buffer) - 1, 0);
-		// 	if (total <= 0){
+		// 	if (total <= 0){H
 		// 		std::cout << "client gone" << std::endl;
 		// 		clearClient(fd);
 		// 		close(fd);

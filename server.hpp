@@ -16,25 +16,33 @@
 #include <csignal>
 #include <cstring>
 #include <string>
+#include <cstdlib>
+#include <map>
 
-
+//TODO : need canonical form for classes
 class	Server{
 	private:
-		int							serverID;
-		int							port;
-		std::string					password;
-		std::string					nick;
-		std::string					user;
-		static bool					signal;
-		std::vector<Client>			Clients;
-		std::vector<struct pollfd>	fds;
-		int							connectionID;
-		std::string 				command;
-		std::string 				args;
+		int									serverID;
+		int									port;
+		std::string							password;
+		std::string							nick;
+		std::string							user;
+		static bool							signal;
+		std::vector<Client>					Clients;
+		std::vector<struct pollfd>			fds;
+		int									connectionID;
+		std::string 						command;
+		std::string 						args;
+		std::map<std::string, std::string>	map;
 	public:
 		Server();
+		//--Setters--//
 		void		setPort(int n);
 		void		setPassword(char *str);
+		//--Getters--//
+		int			getPort();
+		std::string	getPassword();
+		//----//
 		void		create_socket();
 		void		launch_server();
 		void		multi_clients();
