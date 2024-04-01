@@ -141,19 +141,28 @@ void	Server::recieve_data(int fd){
 		 size_t fond;
 		std::string	new_buf = skip_spaces(buf);
 		for(size_t i = 0; i <= new_buf.size(); i++){
-			fond = new_buf.find_first_of("\t\r\n");
+			fond = new_buf.find_first_of("\n");
 			if (fond == std::string::npos)
 				return;
 			std::cout << "content of fond++" << new_buf[fond] << "++" << std::endl;	
 			std::string	commond = new_buf.substr(0, fond);
 			std::cout << "command:" << commond << "--" << std::endl;
-			size_t	sp = commond.find_first_of(" ");
+			size_t	sp = commond.find_first_of("\t\r ");
+			if (sp == std::string::npos){
+				std::cout << "end command" << std::endl;
+				return ;
+			}
 			this->command = commond.substr(0, sp);
 			std::cout << "com:" << this->command << "--" << std::endl;
+			if (commond[fond+1] == '\n'){
+				std::cout << "only one command" << std::endl;
+				return ;
+			}
 			new_buf = new_buf.substr(fond+1, new_buf.size());
 			this->args = skip_spaces(commond.substr(sp + 1, commond.length()));
 			std::cout << "argu:" << this->args << "--" << std::endl;
 			std::cout << "new_buff :" << &new_buf[i] << std::endl;
+
 		}
 			// for(size_t i = 0; i < new_buf.size(); ++i){
 			// 	size_t	old_fond = 0; 
@@ -211,7 +220,10 @@ void	Server::multi_clients(){
 				if (fds[i].fd == serverID)
 					acceptClient();
 				else
+				{
 					recieve_data(fds[i].fd);
+					
+				}
 			}
 		}
 	}

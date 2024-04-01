@@ -13,6 +13,12 @@ int	main(int ac, char **av){
 		serv.setPort(strtol(av[1], NULL, 10));
 		serv.setPassword(av[2]);
 		por = serv.getPort();
+		std::string	s = av[1];
+		if (s.find_first_not_of("0123456789") != std::string::npos){
+			std::cerr << "Only numbers in port!" << std::endl;
+			return (1);
+		}
+
 		pas = serv.getPassword();
 		if (por < 1024 || por > 49151){
 			std::cerr << "Enter a valid port" << std::endl;
