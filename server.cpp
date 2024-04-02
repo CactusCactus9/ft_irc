@@ -146,20 +146,30 @@ void	Server::recieve_data(int fd){
 				return;
 			std::cout << "content of fond++" << new_buf[fond] << "++" << std::endl;	
 			std::string	commond = new_buf.substr(0, fond);
-			std::cout << "command:" << commond << "--" << std::endl;
+			std::cout << "commond:" << commond << "--" << std::endl;
 			size_t	sp = commond.find_first_of("\t\r ");
-			if (sp == std::string::npos){
-				std::cout << "end command" << std::endl;
-				return ;
+			if (sp != std::string::npos){
+				size_t	ind = sp;
+				while (commond[ind] == '\t' || commond[ind] == '\r' || commond[ind] == ' ')
+					ind++;
+				std::cout << "ind+1" << commond[ind] << std::endl;
+				if (commond[ind] == '\n')
+					this->args = '\0';
+				else
+					this->args = commond.substr(ind, fond);
+				this->command = commond.substr(0, sp);
+				std::cout << "com:" << this->command << "--" << std::endl;
 			}
-			this->command = commond.substr(0, sp);
-			std::cout << "com:" << this->command << "--" << std::endl;
-			if (commond[fond+1] == '\n'){
-				std::cout << "only one command" << std::endl;
-				return ;
+			else{
+				this->command = commond.substr(0, fond); 
+				this->args = '\0';
 			}
-			new_buf = new_buf.substr(fond+1, new_buf.size());
-			this->args = skip_spaces(commond.substr(sp + 1, commond.length()));
+			// if (commond[fond+1] == '\n'){
+			// 	std::cout << "only one command" << std::endl;
+			// 	return ;
+			// }
+			// new_buf = new_buf.substr(fond+1, new_buf.size());
+			// this->args = skip_spaces(commond.substr(sp + 1, commond.length()));
 			std::cout << "argu:" << this->args << "--" << std::endl;
 			std::cout << "new_buff :" << &new_buf[i] << std::endl;
 
