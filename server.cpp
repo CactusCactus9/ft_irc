@@ -128,7 +128,7 @@ void	Server::recieve_data(int fd){
 	Client	c;
 
 	memset(buffer, 0, sizeof(buffer));
-	size_t	total = recv(fd, buffer, sizeof(buffer) - 1, 0);
+	size_t	total = recv(fd, buffer, sizeof(buffer), 0);
 	if (total <= 0){
 		std::cout << "client gone" << std::endl;
 		clearClient(fd);
@@ -142,79 +142,44 @@ void	Server::recieve_data(int fd){
 			fond = new_buf.find_first_of("\n");
 			if (fond == std::string::npos)
 				return;
-			std::cout << "content of fond++" << new_buf[fond] << "++" << std::endl;	
+			// std::cout << "content of fond++" << new_buf[fond] << "++" << std::endl;	
 			std::string	commond = new_buf.substr(0, fond);
-			std::cout << "commond:" << commond << "--" << std::endl;
 			size_t	sp = commond.find_first_of("\t\r ");
 			if (sp != std::string::npos){
 				size_t	ind = sp;
 				while (commond[ind] == '\t' || commond[ind] == '\r' || commond[ind] == ' ')
 					ind++;
-				std::cout << "ind+1" << commond[ind] << std::endl;
+				// std::cout << "ind+1" << commond[ind] << std::endl;
 				if (commond[ind] == '\n')
-					this->args = '\0';
+					this->args = "\0";
 				else
 					this->args = commond.substr(ind, fond);
 				this->command = commond.substr(0, sp);
-				std::cout << "com:" << this->command << "--" << std::endl;
 			}
 			else{
 				this->command = commond.substr(0, fond); 
-				this->args = '\0';
+				this->args = "\0";//FIXED: I was passing character
 			}
 			// if (commond[fond+1] == '\n'){
 			// 	std::cout << "only one command" << std::endl;
 			// 	return ;
 			// }
 			// new_buf = new_buf.substr(fond+1, new_buf.size());
-			std::cout << "argu:" << this->args << "--" << std::endl;
-			std::cout << "new_buff :" << &new_buf[i] << std::endl;
+			// std::cout << "new_buff :" << &new_buf[i] << "---" << std::endl;
+            to_lower(this->command);
+			if (validCommand(this->command)){
+				handleCommands1();
+				// std::cout << "com:" << this->command << "--=" << std::endl;
+				// std::cout << "argu:" << this->args << "--=" << std::endl;
+				// std::cout << "args: \"" << this->args << "\"" << std::endl;
+
+			}
+			else if(send(this->connectionID, "Invalid command\n", 16, 0) == -1)
+				throw (std::runtime_error("failed to send to client"));
+			return ;
 
 		}
-			// for(size_t i = 0; i < new_buf.size(); ++i){
-			// 	size_t	old_fond = 0; 
-			// 	if (fond != std::string::npos){
-			// 	}
-			// 	else
-			// 		return ;
-			// 	old_fond = fond;
-			// 	fond++;
-			// }
-		// this->password += "\n";
-		// if (strcmp(buffer, this->password.c_str())){
-		// 	if (send(this->connectionID, "password :", 10, 0) == -1)
-		// 		throw (std::runtime_error("failed to send to client"));
-		// 	size_t	total = recv(fd, buffer, sizeof(buffer) - 1, 0);
-		// 	if (total <= 0){H
-		// 		std::cout << "client gone" << std::endl;
-		// 		clearClient(fd);
-		// 		close(fd);
-		// 	}
-		// }
-		// if (send(this->connectionID, "nickname :", 10, 0) == -1)
-		// 		throw (std::runtime_error("failed to send to client"));
-		// this->nick = buffer;
-		// if (send(this->connectionID, "username :", 10, 0) == -1)
-		// 		throw (std::runtime_error("failed to send to client"));
-		// this->user = buffer;
-		// std::cout << "user = " << this->nick << std::endl;
-		// std::string	buf = buffer;
-		// size_t found = buf.find(' ');
-		// this->command = buf.substr(0, found);
-		// this->args = buf.substr(found + 1, buf.length());
-		// to_lower(this->command);
-		// if (this->command == "join\n")
-		// 	std::cout <<"join channel" << std::endl;
-		// else if (this->command == "invite\n")
-		// 	std::cout <<"invite user" << std::endl;
-		// else if (this->command == "kick\n")
-		// 	std::cout <<"kick user" << std::endl;
-		// std::cout << "command : " << this->command << " args :" << this->args << std::endl;
-
 	}
-		// this->Clients[fd].setBuffer(buffer);
-
-
 }
 
 void	Server::multi_clients(){
