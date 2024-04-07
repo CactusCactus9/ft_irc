@@ -118,12 +118,10 @@ void	to_lower(std::string &command){
 	}
 }
 std::string	skip_spaces(std::string str){
-	for (size_t i = 0; i < str.size(); ++i){
-		if (str[i] != ' ')
-			return (&str[i]);
+	size_t i = 0;
+	for (; str[i] == ' '; ++i){
 	}
-	std::cout << "lets see" << str << std::endl;
-	return (str);
+	return (&str[i]);
 }
 void	Server::recieve_data(int fd){
 	char	buffer[1024];
@@ -169,7 +167,6 @@ void	Server::recieve_data(int fd){
 			// 	return ;
 			// }
 			// new_buf = new_buf.substr(fond+1, new_buf.size());
-			// this->args = skip_spaces(commond.substr(sp + 1, commond.length()));
 			std::cout << "argu:" << this->args << "--" << std::endl;
 			std::cout << "new_buff :" << &new_buf[i] << std::endl;
 
