@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/01 18:16:33 by khanhayf          #+#    #+#             */
+/*   Updated: 2024/04/16 15:44:57 by khanhayf         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 
 #include "Server.hpp"
 
@@ -11,13 +23,15 @@ void	Server::sigHandler(int signum){
 Server::Server(){
 	serverFD = -1; 
 	password = "\0";
-	fillSayingsBox("sayings.txt");
+	// nick = "tikchbila";
+	// user = "tiwliwla";
+	fillSayingsBox("sayings.txt");//M
 }
 
-Server::~Server(){
-	clearClientslist();//do not forget to close clients fd
-	clearChannelslist();
-}
+Server::~Server(){//M
+	clearClientslist();//do not forget to close clients fd //M
+	clearChannelslist();//M
+}//M
 
 void	Server::setPort(int n){
 	this->port = n;
@@ -32,9 +46,10 @@ int	Server::getPort(){
 std::string	Server::getPassword(){
 	return (this->password);
 }
-int	Server::getServerFD(){
-	return serverFD;
-}
+int	Server::getServerFD(){//M
+	return this->serverFD;//M
+}//M
+
 void	Server::clearClient(int fd){
 	for (size_t i = 0; i < fds.size(); ++i){//remove client from fds vector
 		if(fds[i].fd == fd){
@@ -48,15 +63,16 @@ void	Server::clearClient(int fd){
 			break ;
 		}
 	}
-}void	Server::closeFD(){
+}
+void	Server::closeFD(){
 	for (size_t i = 0; i < clients.size(); ++i){//close clients fd
 		std::cout << "client disconnected" << std::endl;
 		close(clients[i].getClientFD());}
 	if (serverFD == -1){//close server socket
 		std::cout << "server disconnected" << std::endl;
 		close(serverFD);}
-	channels.clear();
-	clients.clear();
+	channels.clear();//M
+	clients.clear();//M
 }
 
 void		Server::create_socket(){
@@ -132,14 +148,15 @@ std::string	skip_spaces(std::string str){
 		if (str[i] != ' ')
 			return (&str[i]);
 	}
+	// std::cout << "lets see" << str << std::endl;//M
 	return (str);
 }
 
-void	Server::recieve_data(int fd){
+void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 	char	buffer[1024];
 
 	memset(buffer, 0, sizeof(buffer));
-	size_t	total = recv(fd, buffer, sizeof(buffer), 0);
+	size_t	total = recv(fd, buffer, sizeof(buffer) - 1, 0);
 	if (total <= 0){
 		std::cout << "client gone" << std::endl;
 		clearClient(fd);
@@ -153,41 +170,26 @@ void	Server::recieve_data(int fd){
 			fond = new_buf.find_first_of("\n");
 			if (fond == std::string::npos)
 				return;
-			// std::cout << "content of fond++" << new_buf[fond] << "++" << std::endl;	
 			std::string	commond = new_buf.substr(0, fond);
 			size_t	sp = commond.find_first_of("\t\r ");
 			if (sp != std::string::npos){
 				size_t	ind = sp;
 				while (commond[ind] == '\t' || commond[ind] == '\r' || commond[ind] == ' ')
 					ind++;
-				// std::cout << "ind+1" << commond[ind] << std::endl;
 				if (commond[ind] == '\n')
-					this->args = "\0";
+					this->args = '\0';
 				else
 					this->args = commond.substr(ind, fond);
 				this->command = commond.substr(0, sp);
 			}
 			else{
 				this->command = commond.substr(0, fond); 
-				this->args = "\0";//FIXED: I was passing character
+				this->args = '\0';
 			}
-			// if (commond[fond+1] == '\n'){
-			// 	std::cout << "only one command" << std::endl;
-			// 	return ;
-			// }
-			// new_buf = new_buf.substr(fond+1, new_buf.size());
-			// std::cout << "new_buff :" << &new_buf[i] << "---" << std::endl;
-            to_lower(this->command);
-			if (validCommand(this->command)){
-				handleCommands1();
-				// std::cout << "com:" << this->command << "--=" << std::endl;
-				// std::cout << "argu:" << this->args << "--=" << std::endl;
-				// std::cout << "args: \"" << this->args << "\"" << std::endl;
-
-			}
-			else if(send(this->connectionID, "Invalid command\n", 16, 0) == -1)
-				throw (std::runtime_error("failed to send to client"));
-			return ;
+			new_buf = new_buf.substr(fond+1, new_buf.size());
+			handleCommands(fd);//M
+			command.clear();//M
+			args.clear();//M
 
 		}
 	}
@@ -227,7 +229,7 @@ bool    Server::isInUseNickname(std::string nickname){
     return false;
 }
 
-void	Server::handleCommands(int fd){
+void	Server::handleCommands(int fd){//M
 	tolowercase(command);
 	unsigned int i = 0;
 	for (i = 0; i < clients.size(); i++){
@@ -238,47 +240,19 @@ void	Server::handleCommands(int fd){
 	if (i == clients.size()) //this is not part of the implementation just in case this happens
 		std::cout << "Client no found in container\n";
 	if (command == "user")
-		userCommand(args, this->clients[i], *this);
+		userCommand(args, this->clients[i]);
 	else if (command == "nick")
-		nickCommand(args, clients[i], *this);
+		nickCommand(args, clients[i]);
 	else if (command == "pass")
-		passCommand(args, clients[i], *this);
+		passCommand(args, clients[i]);
 	else if (command == "invite")
-		inviteCommand(args, clients[i], *this);
+		inviteCommand(args, clients[i]);
 	else if (command == "mode")
-		modeCommand(args, clients[i], *this);
+		modeCommand(args, clients[i]);
 	else if (command == "bot")
-		botCommand(clients[i], *this);
-	else if (this->command == "join"){
-			int check = validArgsJoin();
-			if(check){
-				if (check == 2)
-					whithoutPassword();
-				else if (check == 3)
-					whithPassword();
-				joinCommand();
-			}
-			else{
-				if (send(this->connectionID, "Invalid args join\n", 18, 0) == -1)
-					throw (std::runtime_error("failed to send to client"));
-			}
-	}
-	else if (this->command == "topic"){
-		if(validArgsTopic())
-				topicCommand();
-			else{
-				if (send(this->connectionID, "Invalid args topic\n", 19, 0) == -1)
-					throw (std::runtime_error("failed to send to client"));
-			}
-	}
-	else if (this->command == "kick"){
-		if(validArgsKick())
-				kickCommand();
-			else{
-				if (send(this->connectionID, "Invalid args kick\n", 18, 0) == -1)
-					throw (std::runtime_error("failed to send to client"));
-			}
-	}
+		botCommand(clients[i]);
+	else if (command == "privmsg")
+		privmsgCommand(args, clients[i]);
 		
 	// std::cout << "----------------------from the server -------------------------------------\n";
     //     std::cout << "------after cmd------\n";
@@ -292,11 +266,11 @@ void	Server::handleCommands(int fd){
     //     std::cout << "fd = " << clients[i].getClientFD() << "\n";
 }
 
-void    Server::addChannel(Channel const& channel){
+void    Server::addChannel(Channel const& channel){//M
     channels.push_back(channel);
 }
 
-bool	Server::isRegistered(std::string nickname){
+bool	Server::isRegistered(std::string nickname){//M
 	for (unsigned int i = 0; i < clients.size(); i++){
         if (clients[i].getNickname() == nickname && clients[i].isRegistered())
             return true;
@@ -304,7 +278,7 @@ bool	Server::isRegistered(std::string nickname){
 	return false;
 }
 
-bool    Server::isInUseChName(std::string chName){
+bool    Server::isInUseChName(std::string chName){//M
     for (unsigned int i = 0; i < channels.size(); i++){
         if (channels[i].getName() == chName)
             return true;
@@ -320,7 +294,7 @@ bool    Server::isInUseChName(std::string chName){
 //     return false;
 // }
 
-Client		&Server::findClient(std::string nn){
+Client		&Server::findClient(std::string nn){//M
 	unsigned int i;
 	for (i = 0; i < clients.size(); i++){
 		if (clients[i].getNickname() == nn)
@@ -329,7 +303,7 @@ Client		&Server::findClient(std::string nn){
 	return clients[i]; //clients end if not found
 }
 
-Channel		&Server::findChannel(std::string chname){
+Channel		&Server::findChannel(std::string chname){//M
 	unsigned int i;
 	for (i = 0; i < channels.size(); i++){
 		if (channels[i].getName() == chname)
@@ -345,14 +319,14 @@ Channel		&Server::findChannel(std::string chname){
 // 	}
 // }
 
-void	Server::clearClientslist(){
+void	Server::clearClientslist(){//M
 	channels.clear();
 }
-void	Server::clearChannelslist(){
+void	Server::clearChannelslist(){//M
 	clients.clear();
 }
 
-void	Server::fillSayingsBox(std::string fileName){
+void	Server::fillSayingsBox(std::string fileName){//M
 	std::fstream base(fileName);
     if (!base.is_open())
         throw std::runtime_error("Can not open the sayings data base\n");

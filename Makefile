@@ -1,9 +1,19 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/04/01 18:16:43 by khanhayf          #+#    #+#              #
+#    Updated: 2024/04/13 18:36:15 by khanhayf         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 
 NAME	= ircserv
 
-SRCS	= main.cpp Server.cpp Client.cpp authentication.cpp Channel.cpp \
-			invite.cpp mode.cpp bot.cpp Commands.cpp
+SRCS	= main.cpp Server.cpp Client.cpp authentication.cpp Channel.cpp invite.cpp mode.cpp bot.cpp privmsg.cpp
 
 OBJS	= $(SRCS:.cpp=.o)
 

@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   responses.hpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/04 14:03:28 by khanhayf          #+#    #+#             */
+/*   Updated: 2024/04/08 13:48:37 by khanhayf         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #ifndef RESPONSES_HPP
 #define RESPONSES_HPP
@@ -24,10 +35,20 @@
 #define ERR_UNKNOWNMODE(nick, channel, character) ":ircserv 472 " + nick + " " + channel + " " + character + " :is unknown mode char to me\r\n"
 #define ERR_INVALIDMODEPARAM(nick, channel, flag, mode) ":ircserv 696 " + nick + " "  + channel + " " + flag + " * you must specifiy a parameter for the " + mode + " mode\r\n"
 #define ERR_USERNOTINCHANNEL(nick, user, channel) ":ircserv 441 " + nick + " " + user + " " + channel + " " + ":they aren't on that channel\r\n"
+#define ERR_IDENTIFICATION_REQUIRED()
+#define ERR_NO_RECIPIENT(nick) "ircserv 411 " + nick + " " + ":No recipient given\r\n"
+#define ERR_NO_TEXT(nick) "ircserv 412 " + nick + " " + ":No text to send\r\n"
 
 
-
-
+// privmsg #chch,uu coooooooocoooooooooo
+// privmsg uu hhhhhhh jjjjjj hhhhhh ggggg
+// privmsg uu jjjjj,kkkkk,
+// privmsg :uu salam
+// :tngnet.nl.quakenet.org 412 ff :No text to send
+// privmsg uu :goooooo over there
+// privmsg
+// :tngnet.nl.quakenet.org 411 ff :No recipient given (PRIVMSG)
+// privmsg uu,hoh,, hi there
 
 
 
