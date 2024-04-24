@@ -1,20 +1,16 @@
 #include "Server.hpp"
 
 int	Server::validArgsPriv(std::string &args){
-	// std::string	                this->message;
-	// std::string	                this->target;
 	size_t		                count = 0;
 	size_t		                ind;
-	// std::vector<std::string>	vec;
+
 	if (args == "\0"){//FIXED
 		return (0);
 	}
-	if (args[0] == ':')
-		return (2);
+	
 	size_t	index = args.find_first_of(" \t\r','");
-	if (index == std::string::npos){
-		std::cout << "hadchi ghalat>>makafyinch params" << std::endl;
-		return (0);
+	if (index == std::string::npos || (args[0] == ':')){
+		return (2);
 	}
 	//*****IN CASE OF MANY CLIENTS/CHANNELS
 	//------count commas------//
@@ -29,6 +25,7 @@ int	Server::validArgsPriv(std::string &args){
 		//------fill vector with clients/channels------//
 		for (size_t i = 0; i <= count; i++){
 			this->vec.push_back(args.substr(start, ind - start));
+			std::cout << "i=" << i << "---" << "vec[i]:" << vec[i] << "----0" << std::endl;
 			start = ind + 1;
 			ind = args.find_first_of("','", start);
 			if (ind == std::string::npos)
@@ -37,6 +34,8 @@ int	Server::validArgsPriv(std::string &args){
 	}
 	size_t i = index;
 	size_t j;
+	
+	size_t ikram = (args.find_last_of(" \t\r"));
 	if (args[index] == ','){
 		i = ind;
 		for(; (args[i] == ' ' || args[i] == '\r' || args[i] == '\t'); i++);//IN CASE OF CLIENT1, CLIENT2  ?!
@@ -45,7 +44,9 @@ int	Server::validArgsPriv(std::string &args){
 			for (size_t M = 0; M < vec.size(); ++M){
 				for(j = 0; j < clients.size(); ++j){
 					if (vec[M] == clients[j].getNickname()){
-						this->message = (args.substr(i, args.size()));
+						this->message = (args.substr(ikram + 1, args.size()));
+						std::cout << "where message should end:" << ikram << "----+*" << args[ikram] << "====="<< std::endl;
+						std::cout << "i" << i << "---" << args[i] << "----message to many clients:" << this->message << "-----/" << std::endl; 
 						sendMsg(clients[j].getClientFD(), this->message);
 						sendMsg(clients[j].getClientFD(), "\n");
 						break ;
@@ -64,9 +65,9 @@ int	Server::validArgsPriv(std::string &args){
 	//------skip white spaces------//
 		for(; (args[i] == ' ' || args[i] == '\r' || args[i] == '\t'); i++);
 		this->target = args.substr(0, index);
-		this->message = (args.substr(i, args.size()));//TODO: NEED TO GET ONLY FIRST PART
+		this->message = (args.substr(ikram + 1, args.size()));//TODO: NEED TO GET ONLY FIRST PART
 		std::cout << "target:" << this->target << "------+++++" << std::endl;
-		std::cout << "message:" << this->message << "------+++++" << std::endl;
+		std::cout << "message in case of one element:" << this->message << "------+++++" << std::endl;
 		size_t m;
 		for(m = 0; m < clients.size(); m++){
 			if (this->target == clients[m].getNickname())

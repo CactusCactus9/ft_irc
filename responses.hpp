@@ -36,7 +36,7 @@
 #define ERR_INVALIDMODEPARAM(nick, channel, flag, mode) ":ircserv 696 " + nick + " "  + channel + " " + flag + " * you must specifiy a parameter for the " + mode + " mode\r\n"
 #define ERR_USERNOTINCHANNEL(nick, user, channel) ":ircserv 441 " + nick + " " + user + " " + channel + " " + ":they aren't on that channel\r\n"
 #define ERR_IDENTIFICATION_REQUIRED()
-#define ERR_NO_RECIPIENT(nick) "ircserv 411 " + nick + " " + ":No recipient given\r\n"
+#define ERR_NO_RECIPIENT(nick) "ircserv 411 " + nick + " " + ":No recipient given (PRIVMSG)\r\n"
 #define ERR_NO_TEXT(nick) "ircserv 412 " + nick + " " + ":No text to send\r\n"
 
 

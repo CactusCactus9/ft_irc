@@ -38,6 +38,8 @@ void	Server::setPort(int n){
 }
 
 void	Server::setPassword(char *str){
+	if (str[0] == ' ')
+		throw(std::runtime_error("password not valid"));
 	this->password = str;
 }
 int	Server::getPort(){
