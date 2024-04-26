@@ -1,17 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/01 18:17:06 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/07 15:29:42 by khanhayf         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-
-
 #include "Client.hpp"
 
 
@@ -125,4 +111,43 @@ void Client::registerClient(Server &s){
         std::cout << "registered = " << isRegistered() << "\n";
 }
 
+/////////////////IK
+std::string Client::getClientIP() const{
+    return (this->clientIP);
+}
 
+std::string    Client::tolowercase(std::string str){
+    if (!str.empty()){
+        for (unsigned int i = 0; i < str.size(); ++i)
+            str[i] = std::tolower(str[i]);
+    }
+    return (str);
+}
+
+bool    Client::isInUseInvitedCh(std::string ChannelName){
+   ChannelName = tolowercase(ChannelName);
+    for (unsigned int i = 0; i < this->invited2channels.size(); ++i){
+        if (tolowercase(this->invited2channels[i]) == ChannelName)//M
+            return true;
+    }
+    return false;
+}
+
+// std::string& Client::findingInvitedCh(std::string ChannelName){
+//     unsigned int i;
+// 	ChannelName = tolowercase(ChannelName);
+// 	for (i = 0; i < this->invited2channels.size(); i++){
+// 		if (tolowercase(this->invited2channels[i]) == ChannelName)
+// 			return (this->invited2channels[i]);
+// 	}
+// 	return (this->invited2channels[i]);//channels end if not found
+// }
+
+void Client::removeInvitedCh(std::string ChannelName){
+    for (unsigned int i = 0; i < this->invited2channels.size(); i++){
+        if (this->invited2channels[i] == ChannelName){
+            this->invited2channels.erase(this->invited2channels.begin() + i);
+            break ;
+        }
+    }
+}

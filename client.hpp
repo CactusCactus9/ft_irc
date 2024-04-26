@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
+/*   By: iassafe <iassafe@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:16:57 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/16 15:48:15 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/23 18:27:56 by iassafe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,9 @@
 #include <iostream>
 #include <string>
 
-#include "Server.hpp"
 #include "responses.hpp"
+#include "Server.hpp"
+#include <vector>
 
 class Server;
 
@@ -35,6 +36,8 @@ class	Client{
         std::string realname; //the real name of the client
         bool registered; //Indicates whether the client succeeded to register to the server or not
         bool PasswordSended; //set to true the first time the correct password is given by the client //M
+        std::vector<std::string> invited2channels;
+
 	public:
         Client();
         ~Client();
@@ -60,10 +63,18 @@ class	Client{
         std::string getRealname() const;//M
         bool		isRegistered() const; //return registred //M
         bool		isPasswordSended(); //return passwordsended //M
+
+        ////////ik
+        std::string getClientIP() const;//M
 		
 		//other
-        void    clearAuthentication();//M
-		void    registerClient(Server &s);//M
+        void        clearAuthentication();//M
+		void        registerClient(Server &s);//M
+
+        bool            isInUseInvitedCh(std::string ChannelName);
+        std::string     tolowercase(std::string str);
+        // std::string&    findingInvitedCh(std::string ChannelName);
+        void            removeInvitedCh(std::string ChannelName);
 
 };
 

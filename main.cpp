@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
+/*   By: iassafe <iassafe@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:17:48 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/16 16:48:25 by khanhayf         ###   ########.fr       */
+/*   Updated: 2024/04/22 16:24:15 by iassafe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,42 @@ int	main(int ac, char **av){
 			return (1);
 		}
 		serv.setPort(strtol(av[1], NULL, 10));
-		serv.setPassword(av[2]);//MODIFIED
+		serv.setPassword(av[2]);
 		por = serv.getPort();
 		std::string	s = av[1];
 		if (s.find_first_not_of("0123456789") != std::string::npos){
-			throw(std::runtime_error("Only numbers in port!"));//MODIFIED
+			std::cerr << "Only numbers in port!" << std::endl;
+			return (1);
 		}
-
 		pas = serv.getPassword();
-		if (por < 1024 || por > 49151)
-			throw(std::runtime_error("Enter a valid port"));//MODIFIED
-		if (pas.size() <= 0)
-			throw(std::runtime_error("Empty Password!"));//MODIFIED
+		if (por < 1024 || por > 49151){
+			std::cerr << "Enter a valid port" << std::endl;
+			return (1);
+		}
+		if (pas.size() <= 0){
+			std::cout << "Empty Password!" << std::endl;
+			return (1);
+		}
+			// std::cout << "av[2] :" << av[2] << std::endl;
+			// std::cout << "out " << strtol(pas.c_str(), NULL, 10) << std::endl;
+			
+		
+			// if (atoi(av[2]) < 32 || atoi(av[2]) > 126){
+			// 	std::cout << "Enter a valid password!" << std::endl;
+			// 	return (1);
+			// }
+		
+		// if (sizeof(av[2]) > 0){
+		// 	for (size_t i = 0; i < sizeof(av[2]); ++i){
+		// 		if (!isprint(strtol(av[2], NULL, 10)))
+		// 			{
+		// 			std::cerr << "Enter a valid password" << std::endl;
+		// 			return (1);
+		// 		}
+
+		// 	}
+
+		// }
 		signal(SIGINT, Server::sigHandler);
 		signal(SIGQUIT, Server::sigHandler);
 		serv.launch_server();

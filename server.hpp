@@ -38,9 +38,23 @@ class	Server{
 		std::vector<std::string>			sayingsBox;//M
 		std::vector<Client>					clients;
 		std::vector<Channel>				channels;
+		//AZMARA
 		std::string							target;//NEW
 		std::string							message;//NEW
-		std::vector<std::string>			vec;//NEW
+		std::vector<std::string>			vec_cl;//NEW
+		std::vector<std::string>			vec_ch;//NEW
+
+
+		// join
+		int existPassword;
+		std::vector<std::string> joinChannel;
+		std::vector<std::string> joinPassword;
+		std::vector<std::pair<std::string, std::string> > channelPass;
+		std::string ChannelTopic;
+		std::string topic;
+		std::string Channelkick;
+		std::vector<std::string> ClientsKick;
+
 	public:
 		Server();
 		~Server();//close users fds before quitting//M
@@ -65,7 +79,7 @@ class	Server{
 		bool    	isInUseNickname(std::string nickname);//M
 		bool    	isInUseChName(std::string chName);//M
 		void		sendMsg(int clientFd, std::string msg);//M
-		void		handleCommands(int i);//M
+		void		handleCommands(Client &c);//M
 		bool		isRegistered(std::string nickname);//M
 		Client		&findClient(std::string nn);//M
 		Channel		&findChannel(std::string chname);//M
@@ -80,11 +94,40 @@ class	Server{
         void	inviteCommand(std::string &args, Client &c);//M
         void    modeCommand(std::string &args, Client &c);//M
         void    botCommand(Client &c);//M
+
+		// ikrame
+		void	checkCommands(int fd);
+		int		argsJoin(void);
+		void	joinCommand(Client &c);
+		void	execJoinCommand(Client &c);
+		int		validArgsTopic(void);
+		int		validArgsKick(void);
+		void	topicCommand(Client &c);
+		void	execTopicCommand(Client &c);
+		void	kickCommand(Client &c);
+		void	execKickCommand(Client &c);
+		int 	joinSingleChannel(void);
+		void	joinMultiChannels(void);
+
+		void 	whithoutPassword(void);
+		void 	whithPassword(void);
+		void	createChannel(Client &c, int i);
+		void	addChannel(Client &c, int i);
+		void 	makeClientKick(std::string clKick, int exist2Points);
+
+		std::string    tolowercase(std::string str);
+		//AZMARA
 		void	privmsgCommand(std::string &args, Client &cli);//NEW
-		int		validArgsPriv(std::string &args);//NEW
+		int		validArgsPriv(std::string &args, Client &cli);//NEW
+		// int		msgClient(std::string &args, Client &cli);//NEW
+
 };
 
-void    tolowercase(std::string &str);//M
 bool	isValidNickName(std::string nickname);//M
+
+
+///////
+std::string	skipSpaces(std::string str);
+int countComma(std::string str);
 
 #endif
