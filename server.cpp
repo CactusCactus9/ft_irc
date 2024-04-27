@@ -201,6 +201,7 @@ void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 	}
 }
 
+
 void	Server::multi_clients(){
 	while (Server::signal == false){
 		if (poll(&fds[0], fds.size(), -1) == -1 && Server::signal == false)//poll blocked indefinitely till an event occurs or ctrl c

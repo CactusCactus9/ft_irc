@@ -160,10 +160,12 @@ void Channel::sendMsg2Members(Server &s, Client &c){
 void	Channel::sendmsg2chanRegulars(Server S, std::string message){
 	for (size_t i = 0; i < this->regularUsers.size(); ++i){
 		S.sendMsg(regularUsers[i].getClientFD(), message);
+		S.sendMsg(regularUsers[i].getClientFD(), "\n");
 	}
 }
 void	Channel::sendmsg2chanOperators(Server S, std::string message){
 	for (size_t i = 0; i < this->operators.size(); ++i){
-		S.sendMsg(regularUsers[i].getClientFD(), message);
+		S.sendMsg(operators[i].getClientFD(), message);
+		S.sendMsg(operators[i].getClientFD(), "\n");
 	}
 }
