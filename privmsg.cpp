@@ -1,95 +1,5 @@
 #include "Server.hpp"
 
-
-// int	Server::msgClient(std::string &args, Client &cli){
-// 	size_t	count = 0;
-// 	size_t	ind;
-// 	size_t	M;
-// 	size_t	msg_begin;
-
-// 	size_t	index = args.find_first_of(" \t\r','");
-// 	if (index == std::string::npos || (args[0] == ':')){
-// 		return (2);
-// 	}
-// 	//*****IN CASE OF MANY CLIENTS/CHANNELS
-// 	//------count commas------//
-// 	if (args[index] == ','){
-// 		for (size_t i = 0; i < args.size(); i++){
-// 			if (args[i] == ',')
-// 				count++;
-// 		}
-// 		std::cout << "count of commas:" << count << std::endl;
-// 		size_t	start = 0;
-// 		ind = index;
-// 		//------fill vector with clients/channels------//
-// 		for (size_t i = 0; i <= count; i++){
-// 			this->vec.push_back(args.substr(start, ind - start));
-// 			std::cout << "i=" << i << "---" << "vec[i]:" << vec[i] << "----0" << std::endl;
-// 			start = ind + 1;
-// 			ind = args.find_first_of("','", start);
-// 			if (ind == std::string::npos)
-// 				ind = args.find_first_of(" \t\r");	
-// 		}
-// 	}
-// 	size_t i = index;
-	
-	
-// 	msg_begin = (args.find_last_of(" \t\r"));
-// 	if (args[index] == ','){
-// 		i = ind;
-// 		for(; (args[i] == ' ' || args[i] == '\r' || args[i] == '\t'); i++)
-// 			;//IN CASE OF CLIENT1, CLIENT2  ?!
-// 		// //------compare vec with clients------//
-// 		// if (args[index] == ','){
-// 			for (M = 0; M < vec.size(); ++M){
-// 				std::cout << "return of isInUseNickname" << isInUseNickname(vec[M]) << std::endl;
-// 				// for(j = 0; j < clients.size(); ++j){
-// 					// if (isInUseChName(vec[M]) == true){
-// 					if ((isInUseNickname(vec[M]) == true)){
-// 						this->message = (args.substr(msg_begin + 1, args.size()));//GETTING LAST PART
-// 						std::cout << "where message should end:" << msg_begin << "----+*" << args[msg_begin] << "====="<< std::endl;
-// 						std::cout << "i" << i << "---" << args[i] << "----message to many clients:" << this->message << "-----/" << std::endl; 
-// 						sendMsg(findClient(vec[M]).getClientFD(), this->message);
-// 						sendMsg(findClient(vec[M]).getClientFD(), "\n");
-// 					}
-// 					else{
-// 						puts("sup");
-// 						sendMsg(cli.getClientFD(), ERR_NOSUCHNICK(vec[M], this->target));
-// 					}
-// 				}
-// 			// }
-
-// 		}
-	
-
-// 	// }
-// 	else{
-						
-// 	//------skip white spaces------//
-// 		for(; (args[i] == ' ' || args[i] == '\r' || args[i] == '\t'); i++);
-// 		this->target = args.substr(0, index);
-// 		this->message = (args.substr(msg_begin + 1, args.size()));//TODO: NEED TO GET ONLY FIRST PART//max 150 characters?
-// 		std::cout << "target:" << this->target << "------+++++" << std::endl;
-// 		std::cout << "message in case of one element:" << this->message << "------+++++" << std::endl;
-// 		// size_t m;
-// 		// for(m = 0; m < clients.size(); m++){
-// 			if (isInUseNickname(this->target) == true){
-// 				puts("found target");
-// 				sendMsg(cli.getClientFD(), this->message);sendMsg(cli.getClientFD(), "\n");
-// 				return (1);
-// 			}
-// 		// }
-// 		else
-// 			return (3);
-
-		
-// 	}
-// 	std::cout << "this->target:" << this->target << "---;" << std::endl;
-// 		std::cout << "this->message:" << this->message << "---;" << std::endl;
-// 	return (1);
-// }
-
-
 int	Server::validArgsPriv(std::string &args, Client &cli){
 	size_t		                count = 0;
 	size_t		                ind;
@@ -138,7 +48,7 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 	if (args[index] == ','){
 		i = ind;
 		for(; (args[i] == ' ' || args[i] == '\r' || args[i] == '\t'); i++)
-			//IN CASE OF CLIENT1, CLIENT2  ?!
+			//IN CASE OF CLIENT1, CLIENT2,jkkj  ?!
 		// //------compare vec with clients------//
 		// if (args[index] == ','){
 			//***send to clients

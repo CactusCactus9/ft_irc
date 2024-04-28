@@ -16,7 +16,8 @@ static int validCommand(std::string &cmd){
 
 void	Server::handleCommands(Client &c){
 	this->args = skipSpaces(this->args);
-	if(this->args == ""){
+	if(this->args.empty() && this->command != "BOT"){ //M add command != "BOT" if bot is command because bot don't need to have parameters
+	
 		sendMsg(c.getClientFD(), ERR_NEEDMOREPARAMS(c.getNickname(), this->command));
 		return ;
 	}
@@ -47,8 +48,6 @@ void	Server::handleCommands(Client &c){
 			kickCommand(c);
 		else if (this->command == "PRIVMSG")
 			privmsgCommand(args, c);
-			// puts("do u hate me do u do u");
-		//AZMARA
 	} 
 }
 
@@ -60,11 +59,11 @@ void Server::checkCommands(int fd){
 			break ;
 		}
 	}
-	if (i == this->clients.size()) //this is not part of the implementation just in case this happens
-		std::cout << "Client no found in container\n";
+	if (i == clients.size()) //this is not part of the implementation just in case this happens 
+		throw(std::runtime_error("Client no found in the server container\n")); //M
 	if (validCommand(this->command))
 		handleCommands(this->clients[i]);
-	else if (this->command != "" && this->clients[i].isRegistered())
+	else if (this->command != "" && this->clients[i].isRegistered()) //M else without conditons is enough
 		sendMsg(fd, ERR_UNKNOWNCOMMAND(this->clients[i].getNickname(), this->command));
 }
 

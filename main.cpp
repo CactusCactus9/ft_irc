@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iassafe <iassafe@student.42.fr>            +#+  +:+       +#+        */
+/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/01 18:17:48 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/22 16:24:15 by iassafe          ###   ########.fr       */
+/*   Updated: 2024/04/27 17:44:39 by khanhayf         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "Server.hpp"
-#include <cstdlib>
 
 int	main(int ac, char **av){
 	Server	serv;
