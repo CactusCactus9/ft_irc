@@ -3,7 +3,6 @@
 int	Server::validArgsPriv(std::string &args, Client &cli){
 	size_t		                count = 0;
 	size_t		                ind;
-(void)cli;
 	size_t	index = args.find_first_of(" \t\r','");
 	if (index == std::string::npos || (args[0] == ':')){
 		return (2);
@@ -15,18 +14,22 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 			if (args[i] == ',')
 				count++;
 		}
-		std::cout << "count of commas:" << count << std::endl;
 		size_t	start = 0;
 		ind = index;
 		//------fill vector with clients/channels------//
 		for (size_t i = 0; i <= count; i++){
 			std::cout << "args flwel :" << args[start] << "$$$$" << std::endl;
+				std::cout << "ind - start" << ind - start << "---" << args[ind - start] << "-----/*+" << std::endl;
 			if (args[start] == '#'){
+				if (ind - start == 0)
+					break ;
 				this->vec_ch.push_back(args.substr(start, ind - start));
 				std::cout << "channels" << vec_ch[i] << std::endl;
 				std::cout << "i=" << i << "---" << "vec_ch[i]:" << vec_ch[i] << "----0" << std::endl;
 			}
 			else{
+				if (ind - start == 0)
+					break ;
 				this->vec_cl.push_back(args.substr(start, ind - start));
 
 			}
@@ -44,10 +47,16 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 	size_t i = index;
 	std::cout << "args[i] in all cases" << args[i] << "######" << std::endl;
 	size_t M;
+	bool	isMessage = false;
 	size_t msg_begin = (args.find_last_of(" \t\r"));
 	if (args[index] == ','){
 		i = ind;
 		for(; (args[i] == ' ' || args[i] == '\r' || args[i] == '\t'); i++)
+		std::cout << "args[i],,,,,,,,,,,,," << args[i] << std::endl; 
+		if (args[i] == ':'){
+			this->message = (args.substr(i , args.size()));
+			isMessage = true;
+		}
 			//IN CASE OF CLIENT1, CLIENT2,jkkj  ?!
 		// //------compare vec with clients------//
 		// if (args[index] == ','){
@@ -58,7 +67,8 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 				// for(j = 0; j < clients.size(); ++j){
 					// if (isInUseChName(vec[M]) == true){
 					if ((isInUseNickname(vec_cl[M]) == true)){
-						this->message = (args.substr(msg_begin + 1, args.size()));//GETTING LAST PART
+						if (isMessage == false)
+							this->message = (args.substr(msg_begin + 1, args.size()));//GETTING LAST PART
 						std::cout << "where message should end:" << msg_begin << "----+*" << args[msg_begin] << "====="<< std::endl;
 						std::cout << "i" << i << "---" << args[i] << "----message to many clients:" << this->message << "-----/" << std::endl; 
 						sendMsg(findClient(vec_cl[M]).getClientFD(), this->message);
@@ -75,7 +85,8 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 				// for(j = 0; j < clients.size(); ++j){
 					// if (isInUseChName(vec[M]) == true){
 					if ((isInUseChName(vec_ch[M]) == true)){
-						this->message = (args.substr(msg_begin + 1, args.size()));//GETTING LAST PART
+						if (isMessage == false)
+							this->message = (args.substr(msg_begin + 1, args.size()));//GETTING LAST PART
 						std::cout << "where message should end:" << msg_begin << "----+*" << args[msg_begin] << "====="<< std::endl;
 						std::cout << "i" << i << "---" << args[i] << "----message to many channels:" << this->message << "-----/" << std::endl;
 						Channel	chan = findChannel(vec_ch[M]);
@@ -97,8 +108,14 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 						
 	//------skip white spaces------//
 		for(; (args[i] == ' ' || args[i] == '\r' || args[i] == '\t'); i++)
+		std::cout << "args[i],,,,,,,,,,,,," << args[i] << std::endl; 
+		if (args[i] == ':'){
+			this->message = (args.substr(i + 1 , args.size()));
+			isMessage = true;
+		}
 		this->target = args.substr(0, index);
-		this->message = (args.substr(msg_begin + 1, args.size()));//TODO: NEED TO GET ONLY FIRST PART//max 150 characters?
+		if (isMessage == false)
+			this->message = (args.substr(msg_begin + 1, args.size()));//TODO: NEED TO GET ONLY FIRST PART//max 150 characters?
 		std::cout << "target[0]:" << this->target[0] << "------+++++" << std::endl;
 		std::cout << "message in case of one element:" << this->message << "------+++++" << std::endl;
 		// size_t m;
