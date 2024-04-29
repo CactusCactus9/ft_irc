@@ -47,7 +47,7 @@
 //AZMARA
 #define ERR_NO_RECIPIENT(nick) "ircserv 411 " + nick + " " + ":No recipient given (PRIVMSG)\r\n"
 #define ERR_NO_TEXT(nick) "ircserv 412 " + nick + " " + ":No text to send\r\n"
-
+#define ERR_CANNOTSENDTOCHANNEL(channel, nick) ":ircserv 404 " + nick + " " + channel + " :Cannot send to channel\r\n"
 #define RPL_NICKCHANGE(oldNick, nick) ":" + oldNick + " NICK " + nick + "\r\n"
 
 // #define ERR_ALREADYREGISTERED(nick) ":" + "ircserv" + " 462 " + nick + " :You may not reregister !\r\n"
