@@ -27,14 +27,13 @@ void	Server::store_clients_channels(std::string &args, size_t count, size_t ind,
 				ind = args.find_first_of(" \t\r");	
 				if (ind == std::string::npos)
 					std::cout << "failed to find ind" << std::endl;
-		std::cout << "args[ind]" << &args[ind] << "****" << std::endl;
 		}
 }
 
 void	Server::sendToClients(size_t msg_begin, Client &cli, bool isMessage){
-	size_t	M = 0;
 	
-	for (; M < vec_cl.size(); ++M){
+	
+	for (size_t	M = 0; M < vec_cl.size(); ++M){
 		if ((isInUseNickname(vec_cl[M]) == true)){
 			if (isMessage == false)
 				this->message = (args.substr(msg_begin + 1, args.size()));//GETTING LAST PART
@@ -73,26 +72,73 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 	if (args[index] == ','){
 		count = ft_count(args);
 		ind = index;
-		store_clients_channels(args, count, ind, start);
+		// store_clients_channels(args, count, ind, start);
+		for (size_t i = 0; i <= count; i++){
+			if (args[start] == '#'){
+				if (ind - start == 0)
+					break ;
+				this->vec_ch.push_back(args.substr(start, ind - start));
+				std::cout << "vc_ch" << vec_ch[i] << "$$$$$$$$" << std::endl;
+			}
+			else{
+				if (ind - start == 0)
+					break ;
+				this->vec_cl.push_back(args.substr(start, ind - start));
+				std::cout << "vc_cl" << vec_cl[i] << "#########@" << std::endl;
+
+			}
+			start = ind + 1;
+			ind = args.find_first_of("','", start);
+			if (ind == std::string::npos)
+				ind = args.find_first_of(" \t\r");	
+				if (ind == std::string::npos)
+					std::cout << "failed to find ind" << std::endl;
+		}
 	}
-	size_t i = index;
+	size_t comma = index;
 	size_t msg_begin = (args.find_last_of(" \t\r"));
 	if (args[index] == ','){
-		i = ind;
-		for(; (args[i] == ' ' || args[i] == '\r' || args[i] == '\t'); i++) 
-		if (args[i] == ':'){
-			this->message = (args.substr(i , args.size()));
+		comma = ind;
+		std::cout << "comma" << comma << "----" << args[comma] << "^^^^^^^^^^\n"; 
+		for(; (args[comma] == ' ' || args[comma] == '\r' || args[comma] == '\t'); comma++)
+			std::cout << "args[comma]" << args[comma + 2] << "--------------********//////********" << std::endl;
+
+		if (args[comma] == ':'){
+			this->message = (args.substr(comma + 1 , args.size()));
 			isMessage = true;
+		std::cout << "ismessage" << isMessage << "-------)" << std::endl;
 		}
-		sendToClients(msg_begin, cli, isMessage);
-		sendToChannels(msg_begin, cli, isMessage);
+		// sendToClients(msg_begin, cli, isMessage);
+		for (size_t	M = 0; M < vec_cl.size(); ++M){
+		if ((isInUseNickname(vec_cl[M]) == true)){
+			if (isMessage == false)
+				this->message = (args.substr(msg_begin + 1, args.size()));//GETTING LAST PART
+			sendMsg(findClient(vec_cl[M]).getClientFD(), this->message);
+			sendMsg(findClient(vec_cl[M]).getClientFD(), "\n");
+		}
+		else
+			sendMsg(cli.getClientFD(), ERR_NOSUCHNICK(vec_cl[M], this->target));
+	}
+		// sendToChannels(msg_begin, cli, isMessage);
+		for (size_t M = 0; M < vec_ch.size(); ++M){
+		if ((isInUseChName(vec_ch[M]) == true)){
+			if (isMessage == false)
+				this->message = (args.substr(msg_begin + 1, args.size()));//GETTING LAST PART
+			Channel	chan = findChannel(vec_ch[M]);
+			chan.sendmsg2chanOperators(*this, this->message);
+			chan.sendmsg2chanRegulars(*this, this->message);
+		}
+		else
+			sendMsg(cli.getClientFD(), ERR_CANNOTSENDTOCHANNEL(this->target, cli.getNickname()));
+	}
+		vec_ch.clear();
+		vec_cl.clear();
 	}
 
 	else{
-		for(; (args[i] == ' ' || args[i] == '\r' || args[i] == '\t'); i++)
-		std::cout << "args[i],,,,,,,,,,,,," << args[i] << std::endl; 
-		if (args[i] == ':'){
-			this->message = (args.substr(i + 1 , args.size()));
+		for(; (args[comma] == ' ' || args[comma] == '\r' || args[comma] == '\t'); comma++)
+		if (args[comma] == ':'){
+			this->message = (args.substr(comma + 1 , args.size()));
 			isMessage = true;
 		}
 		this->target = args.substr(0, index);

@@ -20,7 +20,7 @@ OBJS	= $(SRCS:.cpp=.o)
 
 CXX	 = c++
 
-CXXFLAGS = -Wall -Werror -Wextra  -std=c++98
+CXXFLAGS = -Wall -Werror -Wextra  -std=c++98 -g
 
 %.o: %.cpp Server.hpp Client.hpp Channel.hpp responses.hpp
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
