@@ -142,19 +142,17 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 			isMessage = true;
 		}
 		this->target = args.substr(0, index);
+		std::cout << "ismessage145" << isMessage << "------------145\n";
 		if (isMessage == false)
 			this->message = (args.substr(msg_begin + 1, args.size()));//TODO: NEED TO GET ONLY FIRST PART//max 150 characters?
-		std::cout << "target[0]:" << this->target[0] << "------+++++" << std::endl;
+		std::cout << "target[0]:" << this->target << "------+++++" << std::endl;
 		std::cout << "message in case of one element:" << this->message << "------+++++" << std::endl;
-		// size_t m;
-		// for(m = 0; m < clients.size(); m++){
 		if (this->target[0] == '#'){
 			std::cout << ":return dial isInUseChName(this->target)" << isInUseChName(this->target) << "&&&&&&&//////" << std::endl;
 			if (isInUseChName(this->target) == true){
-				Channel	chan = findChannel(this->target);
+				Channel	&chan = findChannel(this->target);
 				std::cout << "chan" << chan.getName() << "----------*" << std::endl;
 				chan.sendmsg2chanOperators(*this, this->message);
-				puts("truuuuuuuuuuuue");
 				chan.sendmsg2chanRegulars(*this, this->message);
 				return (1);
 			}
@@ -162,14 +160,15 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 				sendMsg(cli.getClientFD(), ERR_CANNOTSENDTOCHANNEL(this->target, cli.getNickname()));
 		}
 		else if (this->target[0] != '#'){
+			std::cout << "isInuse------------" << isInUseNickname(this->target) << "------------" << std::endl;
 			if (isInUseNickname(this->target) == true){
-				puts("found target");
-				sendMsg(cli.getClientFD(), this->message);sendMsg(cli.getClientFD(), "\n");
+				sendMsg(findClient(this->target).getClientFD(), this->message);
+				sendMsg(findClient(this->target).getClientFD(), "\n");
 				return (1);
 			}
+			else
+				return (3);
 		}
-		else
-			return (3);
 
 		
 	}
