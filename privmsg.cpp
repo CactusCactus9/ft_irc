@@ -94,26 +94,26 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 			ind = args.find_first_of(",", start);
 			std::cout << "________________________start__[" << args[start] << "]\n";
 			if (ind == std::string::npos){
-			ind = args.find_first_of(" \t\r");
-			size_t k = ind;
-			if (args[ind] == ' '){
-				for (; args[k] == ' '; ++k){
+				ind = args.find_first_of(" \t\r");
+				size_t k = ind;
+				if (ind != std::string::npos){
+					for (; args[k] == ' ' || args[k] == '\r' || args[k] == '\t'; ++k){
+					}
 				}
-			}
-			std::cout << "________________________ind__[" << args[k] << "]\n";
-			if (ind == std::string::npos || args[k] == '\0'){
-				vec_ch.clear();
-				vec_cl.clear();
-				return (2);
-			}
+				if (ind == std::string::npos || args[k] == '\0'){
+					vec_ch.clear();
+					vec_cl.clear();
+				std::cout << "________________________ind__[" << args[k] << "]\n";
+					return (2);
+				}
 			}
 		}
 	}
 	size_t comma = index;
+		std::cout << "comma" << comma << "----" << args[comma] << "^^^^^^^^^^\n"; 
 	size_t msg_begin = (args.find_last_of(" \t\r"));
 	if (args[index] == ','){
 		comma = ind;
-		std::cout << "comma" << comma << "----" << args[comma] << "^^^^^^^^^^\n"; 
 		for(; (args[comma] == ' ' || args[comma] == '\r' || args[comma] == '\t'); comma++)
 			std::cout << "args[comma]" << args[comma + 2] << "--------------********//////********" << std::endl;
 
