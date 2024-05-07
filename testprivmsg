@@ -64,6 +64,10 @@ privmsg #do,jiji salaaaaaaaaam
 
 
 //TODO
-*0*privmsg fifi :salam wa fin SEND ALL MESSAGE
-*1*send msg to many channels still seg faults
-*2*while storing clients and channels, only first elemets get stored, but if only clients or only channels, they all get stored
+*0*privmsg fifi :salam wa fin SEND ALL MESSAGE //******DONE******//
+*1*send msg to many channels still seg faults  //******DONE******//
+*2*while storing clients and channels, only first elemets get stored, but if only clients or only channels, they all get stored //*********DONE*********//
+*3*AFTER REGISTRATION, THE BUFFER DOESNT INCLUDE ONLY THE MESSAGE //**********DONE***********//
+*4*NEED TO CHECK IF CLIENT IS IN CHANNEL //**********DONE***********//
+*5*privmsg
+:euroserv.fr.quakenet.org 411 gigi :No recipient given (PRIVMSG)

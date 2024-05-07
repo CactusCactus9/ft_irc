@@ -101,6 +101,7 @@ void	Server::closeFD(){
 void		Server::create_socket(){
 	struct sockaddr_in serveraddress;
 	struct pollfd		pollf;
+
 	memset(&serveraddress, 0, sizeof(serveraddress));
 	serveraddress.sin_family = AF_INET;
 	serveraddress.sin_port = htons(this->port);
@@ -109,17 +110,13 @@ void		Server::create_socket(){
 	serverFD = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverFD == -1)
 		throw (std::runtime_error("Server failed to get created!"));
-	// std::cout << "Socket created successfully" << std::endl;
 	int	val = 1;
 	if (setsockopt(serverFD, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)) == -1)//SET OPTIONS OF SOCKET: SOL_SOCKET:the option is defined at socket level/ SO_REUSADDR : the option that allows to reuse local addresses which can be useful in scenarios where you want to quickly restart a server on the same address and port after it has been stopped.
 		throw (std::runtime_error("the reuse of the address has failed!"));
-	// std::cout << "Setsocketopt successfully" << std::endl;
 	if (fcntl(serverFD, F_SETFL, O_NONBLOCK) == -1)//PERFORM OPERATIONS ON FD : F_SETFL: THE OPERATION IS TO SET FILE STATUS FLAGS/ O_NONBLOCK : SOCKET NONBLOCKING
 		throw ("Failed to set nonblocking flag!");
-	std::cout << "fcntl successfully" << std::endl;
 	if (bind(serverFD, (const sockaddr *)&serveraddress, sizeof(serveraddress)) == -1)//bind the server to a port and IP
 		throw(std::runtime_error("Binding to IP and port failed!"));
-	// std::cout << "Socket binded" << std::endl;
 	if (listen(serverFD, SOMAXCONN) == -1)//socket is passive and listening to coming connections
 		throw (std::runtime_error("server isn't listening!"));
 	std::cout << "Socket listening ..." << std::endl;
@@ -161,47 +158,63 @@ void	Server::acceptClient(){
 	std::cout << "accepted!" << std::endl;
 }
 
-
-
 void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
-	char	buffer[1024];
+	char		buffer[1024];
+	std::string	str;
+	size_t		i;
 
 	memset(buffer, 0, sizeof(buffer));
 	size_t	total = recv(fd, buffer, sizeof(buffer) - 1, 0);
-	if (total <= 0){
-		std::cout << "client gone" << std::endl;
-		clearClient(fd);
-		close(fd);
+	std::string strBuffer = buffer;
+	std::cout << strBuffer.size() << "-----------------\n";
+	if (strBuffer.size() > 512){
+		for (i = 0; i < clients.size(); i++){
+			if (clients[i].getClientFD() == fd)//IF ITS NOT FOUND
+				break ;
+		}
+		if (!isRegistered(clients[i].getNickname())){
+			str = "*";
+		}
+		else
+			str = clients[i].getNickname();
+		sendMsg(fd, ERR_INPUTTOOLONG(str));
 	}
 	else{
-		std::string	buf = buffer;
-		 size_t fond;
-		std::string	new_buf = skipSpaces(buf);
-		for(size_t i = 0; i <= new_buf.size(); i++){
-			fond = new_buf.find_first_of("\n");
-			if (fond == std::string::npos)
-				return;
-			std::string	commond = new_buf.substr(0, fond);
-			size_t	sp = commond.find_first_of("\t\r ");
-			if (sp != std::string::npos){
-				size_t	ind = sp;
-				while (commond[ind] == '\t' || commond[ind] == '\r' || commond[ind] == ' ')
-					ind++;
-				if (commond[ind] == '\n')
-					this->args = "";
-				else
-					this->args = commond.substr(ind, fond);
-				this->command = commond.substr(0, sp);
-			}
-			else{
-				this->command = commond.substr(0, fond); 
-				this->args = '\0';
-			}
-			new_buf = new_buf.substr(fond+1, new_buf.size());
-			checkCommands(fd);//M
-			command.clear();
-			args.clear();
+		if (total <= 0){
+			std::cout << "client disconnected" << std::endl;
+			clearClient(fd);
+			close(fd);
+		}
+		else{
+			std::string	buf = buffer;
+			size_t fond;
+			std::string	new_buf = skipSpaces(buf);
+			for(size_t i = 0; i <= new_buf.size(); i++){
+				fond = new_buf.find_first_of("\n");
+				if (fond == std::string::npos)
+					return;
+				std::string	commond = new_buf.substr(0, fond);
+				size_t	sp = commond.find_first_of("\t\r ");
+				if (sp != std::string::npos){
+					size_t	ind = sp;
+					while (commond[ind] == '\t' || commond[ind] == '\r' || commond[ind] == ' ')
+						ind++;
+					if (commond[ind] == '\n')
+						this->args = "";
+					else
+						this->args = commond.substr(ind, fond);
+					this->command = commond.substr(0, sp);
+				}
+				else{
+					this->command = commond.substr(0, fond); 
+					this->args = '\0';
+				}
+				new_buf = new_buf.substr(fond+1, new_buf.size());
+				checkCommands(fd);//M
+				command.clear();
+				args.clear();
 
+			}
 		}
 	}
 }
@@ -222,10 +235,6 @@ void	Server::multi_clients(){
 	}
 	closeFD();
 }
-
-// void    Server::addClient(Client const& client){
-//     this->clients.push_back(client);
-// }
 
 void	Server::sendMsg(int fd, std::string msg){
 	if (send(fd, msg.c_str(), msg.size(), 0) == -1)
