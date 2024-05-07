@@ -41,8 +41,6 @@ void	Server::sigHandler(int signum){
 Server::Server(){
 	serverFD = -1; 
 	password = "\0";
-	// nick = "tikchbila";
-	// user = "tiwliwla";
 	fillSayingsBox("sayings.txt");//M
 }
 

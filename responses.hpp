@@ -22,7 +22,7 @@
 // #define ERR_NONICKNAMEGIVEN(nick) ":ircserv 431 " + nick + " :No nickname given!\r\n"
 #define ERR_ERRONEUSNICKNAME(nick) ":ircserv 432 " + nick + " :Erroneus nickname!\r\n"
 #define ERR_NOTREGISTERED(nick) ":ircserv 451 " + nick + " :You have not registered !\r\n"
-#define ERR_NOSUCHCHANNEL(channel, nick) ":ircserv 403 " + nick + " " + channel + " :No such channel\r\n"
+#define ERR_NOSUCHCHANNEL(nick, channel) ":ircserv 403 " + nick + " " + channel + " :No such channel\r\n"
 #define ERR_NOSUCHNICK(nick, argument) ":ircserv 401 " + nick + " " + argument + " :No such nick\r\n" 
 #define ERR_NOTONCHANNEL(nick, channel) ":ircserv 442 " + channel + " " + ":You're not on that channel\r\n"
 #define ERR_NOTOPMODES(nick, channel, mode) ":ircserv 482 " + nick + " " + channel + " " + ":You must have channel halfop access or above to set channel mode " + mode + "\r\n"
