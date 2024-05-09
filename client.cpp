@@ -26,7 +26,7 @@ void	Client::setIP(std::string IPaddr){
 	this->clientIP = IPaddr;
 }
 void	Client::setBuffer(std::string rec){
-	this->buffer = rec;
+	this->buffer += rec;
 }
 void	Client::setClientFD(int fd){
 	this->clientFD = fd;
@@ -57,7 +57,7 @@ void Client::setPasswordSended(bool b){
 
 //getters
 int Client::getClientFD(){
-	return (clientFD);
+	return (this->clientFD);
 }
 
 std::string Client::getNickname() const{
@@ -75,6 +75,11 @@ std::string Client::getRealname() const{
 std::string Client::getServername() const{
     return (servername);
 }
+std::string Client::getBuffer() const{
+    return (this->buffer);
+}
+
+
 bool Client::isRegistered() const{
     return (registered);
 } 

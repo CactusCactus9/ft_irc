@@ -65,6 +65,7 @@ class	Server{
 		std::string	getPassword();
 		int			getServerFD();//M
 		std::string getCommand(); //M
+		// Client		find1Client(int fd) const;
 		//----//
 		void		create_socket();
 		void		launch_server();
@@ -121,9 +122,6 @@ class	Server{
 		//AZMARA
 		void	privmsgCommand(std::string &args, Client &cli);//NEW
 		int		validArgsPriv(std::string &args, Client &cli);//NEW
-		void	store_clients_channels(std::string &args, size_t count, size_t ind, size_t start, Client &cli);
-		void	sendToClients(size_t msg_begin, Client &cli, bool isMessage);
-		void	sendToChannels(size_t msg_begin, Client &cli, bool isMessage);
 };
 
 

@@ -76,6 +76,7 @@ class	Client{
         std::string     tolowercase(std::string str);
         // std::string&    findingInvitedCh(std::string ChannelName);
         void            removeInvitedCh(std::string ChannelName);
+        std::string     getBuffer() const;
 
 };
 
