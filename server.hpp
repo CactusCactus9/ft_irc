@@ -54,6 +54,9 @@ class	Server{
 		std::string Channelkick;
 		std::vector<std::string> ClientsKick;
 
+
+		bool flag ;
+
 	public:
 		Server();
 		~Server();//close users fds before quitting//M
@@ -123,6 +126,8 @@ class	Server{
 		//AZMARA
 		void	privmsgCommand(std::string &args, Client &cli);//NEW
 		int		validArgsPriv(std::string &args, Client &cli);//NEW
+
+		void sig(int n);
 };
 
 

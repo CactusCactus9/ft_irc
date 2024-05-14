@@ -185,15 +185,15 @@ void Channel::channelStatusMsg(Server &s,std::string modestring, std::string new
 // :tt!~t@freenode-obu.d75.6g0qj4.IP MODE #ww +klio 77 5 :jj
 
 //AZMARA
-void	Channel::sendmsg2chanRegulars(Server S, std::string message){
+void	Channel::sendmsg2chanRegulars(Server S, Client cli, std::string message, Channel ch){
 	for (size_t i = 0; i < this->regularUsers.size(); ++i){
-		S.sendMsg(regularUsers[i].getClientFD(), message);
+		S.sendMsg(regularUsers[i].getClientFD(), MESSAGE(cli.getNickname(), ch.getName(), message, cli.getUsername(), cli.getClientIP()));
 		S.sendMsg(regularUsers[i].getClientFD(), "\n");
 	}
 }
-void	Channel::sendmsg2chanOperators(Server S, std::string message){
+void	Channel::sendmsg2chanOperators(Server S, Client cli, std::string message, Channel ch){
 	for (size_t i = 0; i < this->operators.size(); ++i){
-		S.sendMsg(operators[i].getClientFD(), message);
+		S.sendMsg(operators[i].getClientFD(), MESSAGE(cli.getNickname(), ch.getName(), message, cli.getUsername(), cli.getClientIP()));
 		S.sendMsg(operators[i].getClientFD(), "\n");
 	}
 }

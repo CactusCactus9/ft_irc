@@ -41,8 +41,8 @@ int	main(int ac, char **av){
 		if (pas.size() <= 0){
 			throw(std::runtime_error("Empty Password!"));//AZMARA
 		}
-		// signal(SIGINT, Server::sigHandler);
-		// signal(SIGQUIT, Server::sigHandler);
+		signal(SIGINT, Server::sigHandler);
+		signal(SIGQUIT, Server::sigHandler);
 		serv.launch_server();
 	}
 	catch(const std::exception &e){

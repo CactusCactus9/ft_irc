@@ -173,9 +173,15 @@ void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 	char		buffer[1024];
 	std::string	str;
 	size_t		i;
+	
 
 	memset(buffer, 0, sizeof(buffer));
 	size_t	total = recv(fd, buffer, sizeof(buffer) - 1, 0);
+	if (total <= 0){
+		std::cout << "client disconnected" << std::endl;
+		clearClient(fd);
+		close(fd);
+	}
 	std::string strBuffer = buffer;
 	// std::cout << strBuffer.size() << "-----------------\n";
 	for (i = 0; i < clients.size(); i++){
@@ -200,42 +206,34 @@ void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 				sendMsg(fd, ERR_INPUTTOOLONG(str));
 			}
 			else{
-				if (total <= 0){
-					std::cout << "client disconnected" << std::endl;
-					clearClient(fd);
-					close(fd);
-				}
-				else{
-					std::string	buf = strBuffer;
-					strBuffer.clear();
-					size_t fond;
-					std::string	new_buf = skipSpaces(buf);
-					for(size_t i = 0; i <= new_buf.size(); i++){
-						fond = new_buf.find_first_of("\n");
-						if (fond == std::string::npos)
-							return;
-						std::string	commond = new_buf.substr(0, fond);
-						size_t	sp = commond.find_first_of("\t\r ");
-						if (sp != std::string::npos){
-							size_t	ind = sp;
-							while (commond[ind] == '\t' || commond[ind] == '\r' || commond[ind] == ' ')
-								ind++;
-							if (commond[ind] == '\n')
-								this->args = "";
-							else
-								this->args = commond.substr(ind, fond);
-							this->command = commond.substr(0, sp);
-						}
-						else{
-							this->command = commond.substr(0, fond); 
-							this->args = '\0';
-						}
-						new_buf = new_buf.substr(fond+1, new_buf.size());
-						checkCommands(fd);//M
-						command.clear();
-						args.clear();
-
+				std::string	buf = strBuffer;
+				strBuffer.clear();
+				size_t fond;
+				std::string	new_buf = skipSpaces(buf);
+				for(size_t i = 0; i <= new_buf.size(); i++){
+					fond = new_buf.find_first_of("\n");
+					if (fond == std::string::npos)
+						return;
+					std::string	commond = new_buf.substr(0, fond);
+					size_t	sp = commond.find_first_of("\t\r ");
+					if (sp != std::string::npos){
+						size_t	ind = sp;
+						while (commond[ind] == '\t' || commond[ind] == '\r' || commond[ind] == ' ')
+							ind++;
+						if (commond[ind] == '\n')
+							this->args = "";
+						else
+							this->args = commond.substr(ind, fond);
+						this->command = commond.substr(0, sp);
 					}
+					else{
+						this->command = commond.substr(0, fond); 
+						this->args = '\0';
+					}
+					new_buf = new_buf.substr(fond+1, new_buf.size());
+					checkCommands(fd);//M
+					command.clear();
+					args.clear();
 				}
 			}
 

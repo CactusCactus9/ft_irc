@@ -93,7 +93,7 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 			if ((isInUseNickname(vec_cl[M]) == true)){
 				if (isMessage == false)
 					this->message = (args.substr(msg_begin + 1, args.size()));//GETTING LAST PART
-			sendMsg(findClient(vec_cl[M]).getClientFD(), this->message);
+			sendMsg(findClient(vec_cl[M]).getClientFD(), MESSAGE(cli.getNickname(), vec_cl[M], this->message, cli.getUsername(), cli.getClientIP()));
 			sendMsg(findClient(vec_cl[M]).getClientFD(), "\n");
 		}
 		else
@@ -105,8 +105,8 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 					this->message = (args.substr(msg_begin + 1, args.size()));//GETTING LAST PART
 				Channel	&chan = findChannel(vec_ch[M]);
 				if (chan.isMember(cli)){
-					chan.sendmsg2chanOperators(*this, this->message);
-					chan.sendmsg2chanRegulars(*this, this->message);
+					chan.sendmsg2chanOperators(*this,cli, this->message, chan);
+					chan.sendmsg2chanRegulars(*this,cli, this->message, chan);
 				}
 				else
 					sendMsg(cli.getClientFD(), ERR_CANNOTSENDTOCHANNEL(vec_ch[M], cli.getNickname()));
@@ -138,8 +138,8 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 				Channel	&chan = findChannel(this->target);
 				std::cout << "chan" << chan.getName() << "----------*" << std::endl;
 				if (chan.isMember(cli)){
-					chan.sendmsg2chanOperators(*this, this->message);
-					chan.sendmsg2chanRegulars(*this, this->message);
+					chan.sendmsg2chanOperators(*this,cli, this->message, chan);
+					chan.sendmsg2chanRegulars(*this,cli, this->message, chan);
 				}
 				else
 					sendMsg(cli.getClientFD(), ERR_CANNOTSENDTOCHANNEL(this->target, cli.getNickname()));
@@ -155,7 +155,7 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 			std::cout << "isInuse------------" << isInUseNickname(this->target) << "------------" << std::endl;
 			if (isInUseNickname(this->target) == true){
 				std::cout << "(this->target).getClientFD()" << findClient(this->target).getClientFD() << "]]]]]]]]]]]]\n";
-				sendMsg(findClient(this->target).getClientFD(), this->message);
+				sendMsg(findClient(this->target).getClientFD(), MESSAGE(cli.getNickname(),this->target,message, cli.getUsername(), cli.getClientIP()));
 				sendMsg(findClient(this->target).getClientFD(), "\n");
 				return (1);
 			}
