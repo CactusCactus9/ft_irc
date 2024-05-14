@@ -75,6 +75,7 @@ class	Server{
 		static void	sigHandler(int signum);
 		void		closeFD();
 		void		clearClient(int fd);
+		void		clearFDS();//AZMARA
 
 		void		addChannel(Channel const& channel);//M
 		bool    	isInUseNickname(std::string nickname);//M

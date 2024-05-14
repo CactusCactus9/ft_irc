@@ -92,12 +92,15 @@ void	Server::clearClient(int fd){
 		}
 	}
 }
+void	Server::clearFDS(){
+
+}
 void	Server::closeFD(){
 	for (size_t i = 0; i < clients.size(); ++i){//close clients fd
-		std::cout << "client disconnected" << std::endl;
+		std::cout << "client disconnecte" << std::endl;
 		close(clients[i].getClientFD());}
 	if (serverFD == -1){//close server socket
-		std::cout << "server disconnected" << std::endl;
+		std::cout << "server disconnectedd" << std::endl;
 		close(serverFD);}
 	this->channels.clear();
 	this->clients.clear();
@@ -144,6 +147,7 @@ void	Server::acceptClient(){
 
 	memset(&clientaddress, 0, sizeof(clientaddress));
 	this->connectionID = accept(serverFD, (struct sockaddr *)&clientaddress, &clientaddrlen);//new socket to 	assure safe communication with multiple clients 
+	std::cout << "this->connectionID[" << this->connectionID << "]]]]]]]]]\n"; 
 	if (connectionID == -1){
 		std::cerr << "Failed to connect!" << std::endl;
 		return ;
@@ -158,6 +162,7 @@ void	Server::acceptClient(){
 	newpool.events = POLLIN;
 
 	client.setClientFD(connectionID);
+	std::cout << "getFDDDDDDDDDD---3AAA" <<client.getClientFD() << "-------\n";
 	client.setIP(inet_ntoa(clientaddress.sin_addr));
 	clients.push_back(client);
 	fds.push_back(newpool);
@@ -174,13 +179,12 @@ void	Server::recieve_data(int fd){//M (this is the last version of recieve_data)
 	std::string strBuffer = buffer;
 	// std::cout << strBuffer.size() << "-----------------\n";
 	for (i = 0; i < clients.size(); i++){
-		if (clients[i].getClientFD() == fd)//IF ITS NOT FOUND
+		if (clients[i].getClientFD() == fd)
 			break ;
 	}
-	// Client& cl = getClient(fd);
 	if (strBuffer.find_first_of("\n") == std::string::npos){
 		clients[i].setBuffer(buffer);
-		std::cout << "bufferAZMARA---->[" << strBuffer << "]\n";
+		// std::cout << "bufferAZMARA---->[" << strBuffer << "]\n";
 	}
 	else{
 			if (clients[i].getBuffer() != ""){
@@ -257,7 +261,7 @@ void	Server::multi_clients(){
 
 void	Server::sendMsg(int fd, std::string msg){
 	if (send(fd, msg.c_str(), msg.size(), 0) == -1)
-		throw (std::runtime_error("failed to send to client"));
+		throw (std::runtime_error("failed to send to clientr"));
 }
 
 bool    Server::isInUseNickname(std::string nickname){
@@ -317,7 +321,7 @@ Client		&Server::findClient(std::string nn){//M
 	unsigned int i;
 	nn = tolowercase(nn);
 	for (i = 0; i < clients.size(); i++){
-		if (clients[i].getNickname() == nn)
+		if (tolowercase(clients[i].getNickname()) == nn)
 			return (clients[i]);
 	}
 	return clients[i]; //clients end if not found

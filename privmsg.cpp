@@ -154,6 +154,7 @@ int	Server::validArgsPriv(std::string &args, Client &cli){
 		else if (this->target[q] != '#'){
 			std::cout << "isInuse------------" << isInUseNickname(this->target) << "------------" << std::endl;
 			if (isInUseNickname(this->target) == true){
+				std::cout << "(this->target).getClientFD()" << findClient(this->target).getClientFD() << "]]]]]]]]]]]]\n";
 				sendMsg(findClient(this->target).getClientFD(), this->message);
 				sendMsg(findClient(this->target).getClientFD(), "\n");
 				return (1);
