@@ -1,28 +1,37 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/01 18:17:06 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/27 21:33:07 by khanhayf         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "Client.hpp"
-
 
 Client::Client(){
     PasswordSended = registered = false;
     clientFD = -1;
-    // std::cout << "++++++++was in constructor\n+++++++\n";
-}
-Client::~Client(){
 }
 
-//setters
-void	Client::setIP(std::string IPaddr){
+Client::Client(Client const& obj){
+    *this = obj;
+}
+
+Client& Client::operator=(Client const& obj){
+    if (this != &obj){
+        clientFD = obj.clientFD;
+        clientIP = obj.clientIP;
+        buffer = obj.buffer;
+        nickname = obj.nickname;
+        username = obj.username;
+        hostname = obj.hostname;
+        servername = obj.servername;
+        realname = obj.realname;
+        registered = obj.registered;
+        PasswordSended = obj.PasswordSended;
+        invited2channels = obj.invited2channels;
+    }
+    return (*this);
+}
+
+Client::~Client(){
+    this->invited2channels.clear();
+}
+
+void	Client::setClientIP(std::string IPaddr){
 	this->clientIP = IPaddr;
 }
 void	Client::setBuffer(std::string rec){
@@ -30,6 +39,10 @@ void	Client::setBuffer(std::string rec){
 }
 void	Client::setClientFD(int fd){
 	this->clientFD = fd;
+}
+
+void Client::clearBuffer(){
+    this->buffer.clear();
 }
 
 void Client::setNickname(std::string nn){
@@ -55,9 +68,11 @@ void Client::setPasswordSended(bool b){
     PasswordSended = b;
 }
 
-//getters
+std::string Client::getBuffer() const{
+    return (this->buffer);
+}
 int Client::getClientFD(){
-	return (this->clientFD);
+	return (clientFD);
 }
 
 std::string Client::getNickname() const{
@@ -75,11 +90,6 @@ std::string Client::getRealname() const{
 std::string Client::getServername() const{
     return (servername);
 }
-std::string Client::getBuffer() const{
-    return (this->buffer);
-}
-
-
 bool Client::isRegistered() const{
     return (registered);
 } 
@@ -87,7 +97,6 @@ bool    Client::isPasswordSended(){
     return PasswordSended;
 }
 
-//others
 void    Client::clearAuthentication(){
     nickname.clear();
     username.clear();
@@ -101,10 +110,10 @@ void Client::registerClient(Server &s){
     if (isPasswordSended() && !nickname.empty() && !username.empty()
     && !hostname.empty() && !servername.empty() && !realname.empty()){
         registered = true;
-        s.sendMsg(getClientFD(), RPL_WELCOME(getNickname(), getUsername()));
-        s.sendMsg(getClientFD(), ":ircserv 375 " + getNickname() + " ::ircserv message of the day\r\n");
-        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :  Hello, World!\r\n");
-        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :\r\n");
+        s.sendMsg(getClientFD(), "\r\n");
+        s.sendMsg(getClientFD(), ":ircserv 001 " + getNickname() + " :Welcome to the ft_irc IRC network " + getNickname() + "!\r\n");
+        s.sendMsg(getClientFD(), ":ircserv 002 " + getNickname() + " :Your host is ircserv\r\n");
+        s.sendMsg(getClientFD(), ":ircserv 003 " + getNickname() + " :This server was created Avr 2024\r\n");
         s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :  Welcome to the\r\n");
         s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :        __  .______        ______     _______. _______ .______     ____    ____ \r\n");
         s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :       |  | |   _  \\      /      |   /       ||   ____||   _  \\    \\   \\  /   / \r\n");
@@ -115,19 +124,9 @@ void Client::registerClient(Server &s){
         s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :                                                               AUTONOMOUS ZONE\r\n");
         s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :                                                                                      \r\n");
         s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :  Thank you for using ircserv!\r\n");
-        s.sendMsg(getClientFD(), ":ircserv 372 " + getNickname() + " :  End of message of the day.\r\n");
     }
-        std::cout << "------registered successfully------\n";
-        std::cout << "nn = " << getNickname() << "\n";
-        std::cout << "un = " << getUsername() << "\n";
-        std::cout << "hn = " << getHostname() << "\n";
-        std::cout << "sn = " << getServername() << "\n";
-        std::cout << "rn = " << getRealname() << "\n";
-        std::cout << "pw = " << isPasswordSended() << "\n";
-        std::cout << "registered = " << isRegistered() << "\n";
 }
 
-/////////////////IK
 std::string Client::getClientIP() const{
     return (this->clientIP);
 }
@@ -143,32 +142,24 @@ std::string    Client::tolowercase(std::string str){
 bool    Client::isInUseInvitedCh(std::string ChannelName){
    ChannelName = tolowercase(ChannelName);
     for (unsigned int i = 0; i < this->invited2channels.size(); ++i){
-        if (tolowercase(this->invited2channels[i]) == ChannelName)//M
+        if (tolowercase(this->invited2channels[i]) == tolowercase(ChannelName))
             return true;
     }
     return false;
 }
 
-// std::string& Client::findingInvitedCh(std::string ChannelName){
-//     unsigned int i;
-// 	ChannelName = tolowercase(ChannelName);
-// 	for (i = 0; i < this->invited2channels.size(); i++){
-// 		if (tolowercase(this->invited2channels[i]) == ChannelName)
-// 			return (this->invited2channels[i]);
-// 	}
-// 	return (this->invited2channels[i]);//channels end if not found
-// }
-
 void Client::removeInvitedCh(std::string ChannelName){
     for (unsigned int i = 0; i < this->invited2channels.size(); i++){
-        if (this->invited2channels[i] == ChannelName){
+        if (tolowercase(this->invited2channels[i]) == tolowercase(ChannelName)){
             this->invited2channels.erase(this->invited2channels.begin() + i);
             break ;
         }
     }
 }
 
-void    Client::invite2channel(std::string chName){//M in case needed to add a new channel to the invited2channels list
+void    Client::invite2channel(std::string chName){
     if (!isInUseInvitedCh(chName))
         invited2channels.push_back(chName);
 }
+
+

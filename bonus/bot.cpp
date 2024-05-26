@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   bot.cpp                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: khanhayf <khanhayf@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/08 22:00:15 by khanhayf          #+#    #+#             */
-/*   Updated: 2024/04/16 16:55:46 by khanhayf         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "Server.hpp"
 
@@ -46,4 +35,4 @@ void    Server::botCommand(Client &c){
     else
         throw (std::runtime_error("sayingsBox failed to get created!"));
 }
-             
+       

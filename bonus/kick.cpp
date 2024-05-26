@@ -1,39 +1,46 @@
 #include"Server.hpp"
 
-
 void Server::execKickCommand(Client& c){
 	for (size_t i = 0; i < this->ClientsKick.size(); ++i){
-		if (!isInUseNickname(this->ClientsKick[i]))
-			sendMsg(c.getClientFD(), ERR_NOSUCHNICK(c.getNickname(), this->ClientsKick[i]));
-		else{
-			Client& findingClient = findClient(this->ClientsKick[i]);
 			if (!isInUseChName(this->Channelkick))
 				sendMsg(c.getClientFD(), ERR_NOSUCHCHANNEL(this->Channelkick, c.getNickname()));
 			else{
-				Channel &findingChannel = findChannel(this->Channelkick);
-				if (!findingChannel.isOperator(c))
-					sendMsg(c.getClientFD(), ERR_CANNOTKICK(c.getNickname(), this->Channelkick));
+				if (!isInUseNickname(this->ClientsKick[i]))
+					sendMsg(c.getClientFD(), ERR_NOSUCHNICK(c.getNickname(), this->ClientsKick[i]));
 				else{
+					Client& findingClient = findClient(this->ClientsKick[i]);
+					Channel &findingChannel = findChannel(this->Channelkick);
 					if (!findingChannel.isMember(findingClient))
 						sendMsg(c.getClientFD(), ERR_USERNOTINCHANNEL(c.getNickname(), findingClient.getNickname(), this->Channelkick));
 					else{
-						if(findingChannel.isOperator(findingClient))
-							findingChannel.removeOperator(findingClient);
-						else if (findingChannel.isRegularuser(findingClient))
-							findingChannel.removeRegularUser(findingClient);
-						sendMsg(c.getClientFD(), RPL_KICK(c.getNickname(), c.getUsername(), c.getHostname(), findingChannel.getName(), findingClient.getNickname()));
+						if (!findingChannel.isOperator(c)){
+							if (findingChannel.isOperator(findingClient))
+								sendMsg(c.getClientFD(), ERR_CANNOTKICK(c.getNickname(), this->Channelkick, " :You must be a channel operator\r\n"));
+							else
+								sendMsg(c.getClientFD(), ERR_CANNOTKICK(c.getNickname(), this->Channelkick, " :You must be a channel half-operator\r\n"));
+						}
+						else{
+							findingChannel.sendMsgKick2Members(*this, c, findingClient.getNickname(), this->reason);
+							if(findingChannel.isOperator(findingClient))
+								findingChannel.removeOperator(findingClient);
+							else if (findingChannel.isRegularuser(findingClient))
+								findingChannel.removeRegularUser(findingClient);
+							if (!findingChannel.getSizeMembers())
+								removeChannel(findingChannel.getName());
+						}
 					}
+
 				}
 			}
-		}
 	}
+	this->reason.clear();
 	this->ClientsKick.clear();
 }
-
 
 void Server::makeClientKick(std::string clKick, int exist2Points){
 	std::vector<std::string> vec;
 	clKick = skipSpaces(clKick);
+	clKick = skipCommas(clKick);
 	size_t countClient = 0;
 	if (!exist2Points)
 		countClient = countComma(clKick);
@@ -54,14 +61,14 @@ void Server::makeClientKick(std::string clKick, int exist2Points){
 		}
 	}
 	for(size_t i = 0; i < vec.size(); ++i){
-		if (vec[i] != "")
-			this->ClientsKick.push_back(vec[i]);
+		this->ClientsKick.push_back(vec[i]);
 	}
 	vec.clear();
 }
 
 int Server::validArgsKick(void){
 	this->args = skipSpaces(this->args);
+	this->reason = "";
 	int count_args = 1;
 	for(size_t i =0; i < this->args.length(); ++i){
 		if (this->args[i] == ' '){
@@ -89,6 +96,17 @@ int Server::validArgsKick(void){
 			temp_args = temp_args.substr(0, found_sp);
 		else
 			temp_args = temp_args.substr(0, temp_args.length());
+	}
+	if (count_args > 2 && !exist2Points){
+		std::string str = this->args.substr(found_sp + 1, this->args.length());
+		str = skipSpaces(str);
+		size_t space = str.find_first_of(" \r\t");
+		str = str.substr(space, str.length());
+		str = skipSpaces(str);
+		if (str[0] == ':')
+			this->reason = &str[1];
+		else
+			this->reason = str;
 	}
 	makeClientKick(temp_args, exist2Points);
 	return (1);
